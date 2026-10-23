@@ -51,8 +51,8 @@
   - 레이아웃: 상단 바 오른쪽에 비로그인 시 "로그인"(`/oauth2/authorization/google`), 로그인 시 이름과 "로그아웃"(POST 폼), 관리자면 "관리" 링크. `<meta name="_csrf">`, `<meta name="_csrf_header">`(Task 2 JS가 사용).
   - 테스트 관례: 로그인 사용자는 `oidcLogin().idToken(t -> t.subject("u1").claim("name", "유저"))`, 관리자는 여기에 `.authorities(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER"))`.
 
-- [ ] **Step 1: 개념 설명**: OAuth2와 OpenID Connect(비밀번호 대신 Google이 "이 사람 맞다"고 보증), 클라이언트 ID·시크릿과 리디렉션 URI, 인증과 인가의 차이, 세션 쿠키, CSRF가 무엇이고 왜 폼에 토큰이 붙는지, Google Cloud Console에서 OAuth 클라이언트 만들기
-- [ ] **Step 2: 실패 테스트 작성** (`AdminAuthoritiesTest`): `OidcUserAuthority`를 `OidcIdToken`(claims: `email`, `email_verified`)으로 만들어 매퍼에 넣는다.
+- [x] **Step 1: 개념 설명**: OAuth2와 OpenID Connect(비밀번호 대신 Google이 "이 사람 맞다"고 보증), 클라이언트 ID·시크릿과 리디렉션 URI, 인증과 인가의 차이, 세션 쿠키, CSRF가 무엇이고 왜 폼에 토큰이 붙는지, Google Cloud Console에서 OAuth 클라이언트 만들기
+- [x] **Step 2: 실패 테스트 작성** (`AdminAuthoritiesTest`): `OidcUserAuthority`를 `OidcIdToken`(claims: `email`, `email_verified`)으로 만들어 매퍼에 넣는다.
 
 ```java
 @Test void verifiedAdminEmailGetsAdmin()        // email "admin@gmail.com", verified true → ROLE_ADMIN 포함
@@ -61,7 +61,7 @@
 @Test void otherEmailIsUser()                   // "other@gmail.com" → ROLE_USER만
 @Test void blankAdminEmailMeansNoAdmin()        // 설정 "" + email "" → ROLE_ADMIN 없음
 ```
-- [ ] **Step 3: 실패 테스트 작성** (`AdminAccessTest`, `@SpringBootTest @AutoConfigureMockMvc @Import(TestcontainersConfiguration.class)`):
+- [x] **Step 3: 실패 테스트 작성** (`AdminAccessTest`, `@SpringBootTest @AutoConfigureMockMvc @Import(TestcontainersConfiguration.class)`):
 
 ```java
 @Test void anonymousAdminRedirectsToGoogle()    // GET /admin → 3xx, redirectedUrlPattern("**/oauth2/authorization/google")
@@ -71,16 +71,16 @@
 @Test void topbarShowsAdminLinkForAdmin()       // 관리자로 GET / → "관리" 링크와 "로그아웃" 포함
 @Test void apiTokenStillWorks()                 // 계획 1 API 체인이 그대로인지: Bearer 없이 GET /api/notes → 401
 ```
-- [ ] **Step 4: 실행해서 실패 확인**: `./gradlew test --tests '*AdminAuthoritiesTest' --tests '*AdminAccessTest'` → 컴파일 실패 또는 FAIL
-- [ ] **Step 5: 구현**
+- [x] **Step 4: 실행해서 실패 확인**: `./gradlew test --tests '*AdminAuthoritiesTest' --tests '*AdminAccessTest'` → 컴파일 실패 또는 FAIL
+- [x] **Step 5: 구현**
   - `build.gradle`: `implementation 'org.springframework.boot:spring-boot-starter-security-oauth2-client'`, `testImplementation 'org.springframework.boot:spring-boot-starter-security-oauth2-client-test'`
   - `application.yml`: `spring.security.oauth2.client.registration.google`에 `client-id: ${GOOGLE_CLIENT_ID:unset}`, `client-secret: ${GOOGLE_CLIENT_SECRET:unset}`, `scope: openid,profile,email`. `blog.admin-email: ${BLOG_ADMIN_EMAIL:}`
   - 매퍼는 `OidcUserAuthority`의 `getIdToken()`에서 `getEmail()`, `getEmailVerified()`를 읽는다. `Boolean.TRUE.equals(verified)`일 때만 비교한다.
   - 페이지 체인에 `oauth2Login(o -> o.userInfoEndpoint(u -> u.userAuthoritiesMapper(adminAuthorities)))`. 403은 `error/403.html`로.
-- [ ] **Step 6: 실행해서 통과 확인**: 위 명령 → PASS, 이어서 `./gradlew test` 전체 PASS
-- [ ] **Step 7: 사용자와 함께 Google 설정**: Google Cloud Console에서 프로젝트 → OAuth 동의 화면(외부, 테스트 사용자에 본인) → OAuth 클라이언트 ID(웹 애플리케이션, 승인된 리디렉션 URI `http://localhost:8080/login/oauth2/code/google`). 사용자가 직접 `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `BLOG_ADMIN_EMAIL`을 Windows 사용자 환경변수로 설정한다(시크릿은 대화에 붙여넣지 않는다). 터미널 앱을 다시 켠다.
-- [ ] **Step 8: 수동 확인**: `bootRun` → 로그인 → 상단 바에 "관리" → `/admin` 열림. 시작 로그에 `Using generated security password`가 없어야 한다(OAuth2를 켜면 기본 메모리 사용자가 사라진다, 계획 1 리뷰 이월 항목).
-- [ ] **Step 9: 커밋**: `git commit -m "feat: Google 로그인과 관리자 권한"`
+- [x] **Step 6: 실행해서 통과 확인**: 위 명령 → PASS, 이어서 `./gradlew test` 전체 PASS
+- [x] **Step 7: 사용자와 함께 Google 설정**: Google Cloud Console에서 프로젝트 → OAuth 동의 화면(외부, 테스트 사용자에 본인) → OAuth 클라이언트 ID(웹 애플리케이션, 승인된 리디렉션 URI `http://localhost:8080/login/oauth2/code/google`). 사용자가 직접 `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `BLOG_ADMIN_EMAIL`을 Windows 사용자 환경변수로 설정한다(시크릿은 대화에 붙여넣지 않는다). 터미널 앱을 다시 켠다.
+- [x] **Step 8: 수동 확인**: `bootRun` → 로그인 → 상단 바에 "관리" → `/admin` 열림. 시작 로그에 `Using generated security password`가 없어야 한다(OAuth2를 켜면 기본 메모리 사용자가 사라진다, 계획 1 리뷰 이월 항목).
+- [x] **Step 9: 커밋**: `git commit -m "feat: Google 로그인과 관리자 권한"`
 
 ---
 
