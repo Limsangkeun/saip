@@ -175,8 +175,8 @@ assertEquals("spring-boot-4", Slugs.of("  Spring Boot 4! "));
   - `record Finding(String pattern, int line)`: 비밀값 자체는 담지 않는다.
   - `@Component SensitiveScanner.scan(String text) -> List<Finding>` (line은 1부터)
 
-- [ ] **Step 1: 개념 설명**: 정규식 기초, "이중 방어"가 왜 필요한지, 오탐(false positive)과 미탐
-- [ ] **Step 2: 실패하는 테스트 작성**
+- [x] **Step 1: 개념 설명**: 정규식 기초, "이중 방어"가 왜 필요한지, 오탐(false positive)과 미탐
+- [x] **Step 2: 실패하는 테스트 작성**
 
 ```java
 @Test void findsAwsKeyWithLine()    // "a\nkey AKIAABCDEFGHIJKLMNOP" → [Finding("aws_access_key", 2)]
@@ -186,10 +186,10 @@ assertEquals("spring-boot-4", Slugs.of("  Spring Boot 4! "));
 @Test void findsPrivateIp()         // "192.168.0.10" → pattern "private_ip"
 @Test void cleanTextPasses()        // "Docker 멀티스테이지 빌드 설명" → empty
 ```
-- [ ] **Step 3: 실행해서 실패 확인** → FAIL
-- [ ] **Step 4: 구현**: 시작할 때 TSV를 읽어(UTF-8) `Pattern`으로 컴파일하고, 줄 단위로 검사한다.
-- [ ] **Step 5: 실행해서 통과 확인** → PASS
-- [ ] **Step 6: 커밋**: `git commit -m "feat: 민감 정보 패턴 검사기"`
+- [x] **Step 3: 실행해서 실패 확인** → FAIL
+- [x] **Step 4: 구현**: 시작할 때 TSV를 읽어(UTF-8) `Pattern`으로 컴파일하고, 줄 단위로 검사한다.
+- [x] **Step 5: 실행해서 통과 확인** → PASS
+- [x] **Step 6: 커밋**: `git commit -m "feat: 민감 정보 패턴 검사기"`
 
 ### Task 6: 토큰으로 보호되는 노트 API
 

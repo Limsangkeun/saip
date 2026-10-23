@@ -4,3 +4,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: validate
+
+blog:
+  api-token: ${BLOG_API_TOKEN:}
+  base-url: ${BLOG_BASE_URL:http://localhost:8080}
