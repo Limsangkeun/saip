@@ -40,7 +40,7 @@ description: 사용자가 지금 대화에서 배운 내용을 블로그나 학�
 
    회사 내부 코드는 그대로 옮기지 않는다. 개념만 남기고 일반화한 예제로 다시 쓴다.
 6. **전송**: `{"title", "categorySlug", "categoryName", "body"}` JSON을 임시 파일에 UTF-8로 쓰고(명령줄 인자로 본문을 넘기지 않는다) `create` 또는 `update`를 실행한다.
-   - 종료 코드 2면 `findings`의 `line`에 해당하는 줄을 치환해 다시 보낸다. **1번 줄은 제목, 본문은 2번 줄부터**다. 로컬 검사의 `redact_word`는 회사 금지어(`~/.claude/blog-redact.txt`)에 걸린 것이다.
+   - 종료 코드 2면 `findings`의 `line`에 해당하는 줄을 치환해 다시 보낸다. **0번 줄은 카테고리(`categorySlug`, `categoryName`), 1번 줄은 제목, 본문은 2번 줄부터**다. 로컬 검사의 `redact_word`는 회사 금지어(`~/.claude/blog-redact.txt`)에 걸린 것이다.
    - 서버 422도 같은 번호 규칙이므로 똑같이 처리한다. 409(제목 중복)면 기존 노트를 보강하거나 제목을 바꾼다.
    - 전송이 끝나면 임시 파일을 지운다.
 7. **보고**: 한 줄로 알린다. 예: `새로 만듦: Docker 기초 (http://localhost:8080/notes/docker-기초)` 또는 `기존 노트 수정함: Flyway (url)`.

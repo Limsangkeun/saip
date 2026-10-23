@@ -9,8 +9,10 @@ import com.saip.blog.sensitive.SensitiveScanner;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -88,9 +90,12 @@ class NoteApiController {
 		return new WriteResult(n.getSlug(), url(n), "updated");
 	}
 
-	/** 1번 줄은 제목, 본문은 2번 줄부터로 센다. */
+	/** 0번 줄은 카테고리(사이드바에 공개된다), 1번 줄은 제목, 본문은 2번 줄부터로 센다. */
 	private void rejectSecrets(NoteRequest req) {
-		List<Finding> findings = scanner.scan(req.title() + "\n" + req.body());
+		String category = req.categorySlug() + " " + Objects.requireNonNullElse(req.categoryName(), "");
+		List<Finding> findings = new ArrayList<>();
+		scanner.scan(category).forEach(f -> findings.add(new Finding(f.pattern(), 0)));
+		findings.addAll(scanner.scan(req.title() + "\n" + req.body()));
 		if (!findings.isEmpty()) {
 			throw new SensitiveContentException(findings);
 		}

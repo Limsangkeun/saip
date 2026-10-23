@@ -62,6 +62,33 @@ class SensitiveScannerTest {
 		assertThat(scanner.scan("Docker 멀티스테이지 빌드 설명\n```java\nint a = 1;\n```")).isEmpty();
 	}
 
+	@Test
+	void findsCurrentKeyFormats() {
+		assertThat(patterns(scanner.scan("sk-proj-Ab1_cd2-EFghIJklMNopQRstUVwx"))).contains("openai_key");
+		assertThat(patterns(scanner.scan("github_pat_11ABCDEFG0abcdefghijklmnop"))).containsExactly("github_pat");
+		assertThat(patterns(scanner.scan("AIzaSyA1234567890abcdefghijklmnopqrstuv"))).containsExactly("google_api_key");
+		assertThat(patterns(scanner.scan("xoxb-1234567890-abcdefghij"))).containsExactly("slack_token");
+		assertThat(patterns(scanner.scan("sk_live_" + "abcdefghijklmnopqrstuvwx"))).containsExactly("stripe_key");
+	}
+
+	@Test
+	void findsApiKeyAssign() {
+		assertThat(patterns(scanner.scan("MY_SERVICE_API_KEY=abcd1234efgh"))).containsExactly("password_assign");
+	}
+
+	@Test
+	void ignoresHyphenatedWordsLikeSk() {
+		assertThat(scanner.scan("task-management-system-design-notes")).isEmpty();
+	}
+
+	@Test
+	void ignoresTeachingCode() {
+		assertThat(scanner.scan("password: ${DB_PASSWORD}")).isEmpty();
+		assertThat(scanner.scan("secret: ${JWT_SECRET}")).isEmpty();
+		assertThat(scanner.scan("String token = request.getHeader(\"Authorization\");")).isEmpty();
+		assertThat(scanner.scan("password=<비밀번호>")).isEmpty();
+	}
+
 	private static List<String> patterns(List<Finding> findings) {
 		return findings.stream().map(Finding::pattern).toList();
 	}

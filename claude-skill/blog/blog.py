@@ -76,10 +76,16 @@ def call(method, path, body=None):
         return 2 if e.code == 422 else 1
 
 
+def note_findings(note, redact_words):
+    """서버 422와 같은 번호: 0번 줄은 카테고리(사이드바에 공개), 1번 줄은 제목, 본문은 2번 줄부터."""
+    category = note["categorySlug"] + " " + (note.get("categoryName") or "")
+    return ([{**f, "line": 0} for f in scan(category, redact_words)]
+            + scan(note["title"] + "\n" + note["body"], redact_words))
+
+
 def write(method, path, file):
     note = json.loads(Path(file).read_text(encoding="utf-8"))
-    # 1번 줄은 제목, 본문은 2번 줄부터 (서버 422 응답과 같은 번호)
-    findings = scan(note["title"] + "\n" + note["body"], [w.strip() for w in load_lines(REDACT_FILE)])
+    findings = note_findings(note, [w.strip() for w in load_lines(REDACT_FILE)])
     if findings:
         print(json.dumps({"findings": findings}))
         return 2
@@ -93,6 +99,10 @@ def selftest():
     assert scan("t\npassword=[PASSWORD]", words) == []
     assert scan("t\nACME 사내 시스템", words) == [{"pattern": "redact_word", "line": 2}]
     assert scan("도커 정리\n한글 본문 ✅", words) == []
+    assert [f["pattern"] for f in scan("t\nsk-proj-Ab1_cd2-EFghIJklMNopQRstUVwx", words)] == ["openai_key"]
+    assert scan("t\npassword: ${DB_PASSWORD}\nString token = request.getHeader(x);", words) == []
+    assert note_findings({"title": "t", "categorySlug": "acme", "categoryName": "사내", "body": "b"}, words) == [
+        {"pattern": "redact_word", "line": 0}]
     assert note_path("왕복") == "/api/notes/%EC%99%95%EB%B3%B5"
     assert base_url("http://localhost:8080/") == "http://localhost:8080"
     assert base_url("https://blog.example.com") == "https://blog.example.com"

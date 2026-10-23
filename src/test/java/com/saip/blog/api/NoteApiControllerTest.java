@@ -126,6 +126,14 @@ class NoteApiControllerTest {
 	}
 
 	@Test
+	void secretInCategoryIs422OnLineZero() throws Exception {
+		create("""
+				{"title":"Docker","categorySlug":"deploy","categoryName":"password=hunter22","body":"x"}""")
+			.andExpect(status().isUnprocessableContent())
+			.andExpect(jsonPath("$.findings[0].line").value(0));
+	}
+
+	@Test
 	void publicPagesStillOpen() throws Exception {
 		mvc.perform(get("/")).andExpect(status().isOk());
 	}
