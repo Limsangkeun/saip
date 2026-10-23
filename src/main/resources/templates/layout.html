@@ -1,8 +1,11 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org" th:fragment="layout(title, content, toc)">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:fragment="layout(title, content, toc)">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="_csrf" th:if="${_csrf}" th:content="${_csrf.token}">
+  <meta name="_csrf_header" th:if="${_csrf}" th:content="${_csrf.headerName}">
   <title th:replace="${title}">saip</title>
   <link rel="stylesheet" th:href="@{/css/site.css}">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github.min.css" media="(prefers-color-scheme: light)"
@@ -17,6 +20,14 @@
   <form class="search" th:action="@{/search}" method="get" role="search">
     <input type="search" name="q" placeholder="노트 검색" aria-label="노트 검색" th:value="${q}">
   </form>
+  <nav class="account" aria-label="계정">
+    <a sec:authorize="!isAuthenticated()" th:href="@{/oauth2/authorization/google}">로그인</a>
+    <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin}">관리</a>
+    <span sec:authorize="isAuthenticated()" class="who" th:text="${#authentication.principal.fullName}">이름</span>
+    <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post">
+      <button type="submit" class="link">로그아웃</button>
+    </form>
+  </nav>
 </header>
 <div class="page">
   <nav class="side" aria-label="주제">
@@ -25,7 +36,7 @@
       <a th:each="n : ${cat.notes}" th:href="@{/notes/{slug}(slug=${n.slug})}" th:text="${n.title}"
          th:classappend="${note != null and note.slug == n.slug} ? 'on'">Docker</a>
     </section>
-    <p class="empty" th:if="${#lists.isEmpty(tree)}">아직 노트가 없습니다.</p>
+    <p class="empty" th:if="${tree != null and #lists.isEmpty(tree)}">아직 노트가 없습니다.</p>
   </nav>
   <main class="main" th:replace="${content}">본문</main>
   <aside class="toc" th:replace="${toc}"></aside>

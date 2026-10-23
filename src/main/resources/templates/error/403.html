@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::main}, ~{})}">
+<head><title>권한 없음 · saip</title></head>
+<body>
+<main class="main">
+  <h1>권한이 없습니다</h1>
+  <p>이 화면은 관리자만 볼 수 있어요. <a th:href="@{/}">첫 화면으로</a></p>
+</main>
+</body>
+</html>

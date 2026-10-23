@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::main}, ~{})}">
+<head><title>관리 · saip</title></head>
+<body>
+<main class="main">
+  <h1>노트 관리</h1>
+  <table class="admin-table">
+    <thead><tr><th>제목</th><th>주제</th><th>수정일</th><th></th></tr></thead>
+    <tbody th:each="cat : ${tree}">
+      <tr th:each="n : ${cat.notes}">
+        <td><a th:href="@{/notes/{slug}(slug=${n.slug})}" th:text="${n.title}">Docker</a></td>
+        <td th:text="${cat.name}">배포</td>
+        <td th:text="${@dates.day(n.updatedAt)}">2026-10-24</td>
+        <td><a th:href="@{/admin/notes/{slug}/edit(slug=${n.slug})}">편집</a></td>
+      </tr>
+    </tbody>
+  </table>
+  <p class="empty" th:if="${#lists.isEmpty(tree)}">아직 노트가 없습니다.</p>
+</main>
+</body>
+</html>

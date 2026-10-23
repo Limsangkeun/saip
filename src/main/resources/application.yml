@@ -1,6 +1,15 @@
 spring:
   application:
     name: blog
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            # 비밀값은 환경변수로만. 없어도 앱은 뜨고 로그인만 실패한다.
+            client-id: ${GOOGLE_CLIENT_ID:unset}
+            client-secret: ${GOOGLE_CLIENT_SECRET:unset}
+            scope: openid,profile,email
   jpa:
     hibernate:
       ddl-auto: validate
@@ -8,3 +17,4 @@ spring:
 blog:
   api-token: ${BLOG_API_TOKEN:}
   base-url: ${BLOG_BASE_URL:http://localhost:8080}
+  admin-email: ${BLOG_ADMIN_EMAIL:}
