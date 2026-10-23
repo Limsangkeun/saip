@@ -12,7 +12,7 @@ import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;
 import org.springframework.stereotype.Component;
 
-/** 노트 마크다운을 HTML로 바꾼다. 원본 HTML은 실행되지 않도록 이스케이프한다. */
+/** 노트 마크다운을 HTML로 바꾼다. 원본 HTML은 이스케이프하고, 링크는 http/https/mailto 등만 허용한다. */
 @Component
 public class MarkdownRenderer {
 
@@ -22,7 +22,9 @@ public class MarkdownRenderer {
 
 	private final Parser parser = Parser.builder().extensions(EXTENSIONS).build();
 
-	private final HtmlRenderer renderer = HtmlRenderer.builder().extensions(EXTENSIONS).escapeHtml(true).build();
+	private final HtmlRenderer renderer = HtmlRenderer.builder().extensions(EXTENSIONS).escapeHtml(true)
+		.sanitizeUrls(true)
+		.build();
 
 	public String render(String md) {
 		return renderer.render(parser.parse(md));

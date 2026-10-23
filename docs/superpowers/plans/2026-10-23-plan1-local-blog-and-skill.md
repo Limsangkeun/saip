@@ -110,8 +110,8 @@ assertEquals("spring-boot-4", Slugs.of("  Spring Boot 4! "));
 **Interfaces:**
 - Produces: `@Component MarkdownRenderer.render(String md) -> String` (HTML). 계획 2의 편집기 미리보기도 이 메서드를 쓴다(공개 화면과 결과가 같아야 하므로).
 
-- [ ] **Step 1: 개념 설명**: 마크다운이 HTML로 바뀌는 과정, 서버 렌더링과 클라이언트 렌더링의 차이, XSS가 무엇인지
-- [ ] **Step 2: 실패하는 테스트 작성**
+- [x] **Step 1: 개념 설명**: 마크다운이 HTML로 바뀌는 과정, 서버 렌더링과 클라이언트 렌더링의 차이, XSS가 무엇인지
+- [x] **Step 2: 실패하는 테스트 작성**
 
 ```java
 @Test void table()      // "|a|b|\n|-|-|\n|1|2|" → contains "<table>"
@@ -122,10 +122,10 @@ assertEquals("spring-boot-4", Slugs.of("  Spring Boot 4! "));
 @Test void mermaidKeptAsCode() // "```mermaid\ngraph TD\n```" → contains "class=\"language-mermaid\""
 @Test void escapesRawHtml()    // "<script>alert(1)</script>" → not contains "<script>", contains "&lt;script&gt;"
 ```
-- [ ] **Step 3: 실행해서 실패 확인**: `./gradlew test --tests "*MarkdownRendererTest"` → FAIL
-- [ ] **Step 4: 구현**: Parser/HtmlRenderer에 위 확장을 모두 등록하고, `HtmlRenderer.builder().escapeHtml(true)`로 설정한다. `alert` 테스트가 기대하는 클래스명이 실제 확장 출력과 다르면 테스트를 실제 출력에 맞춘다(확장의 클래스명이 기준이다).
-- [ ] **Step 5: 실행해서 통과 확인** → PASS
-- [ ] **Step 6: 커밋**: `git commit -m "feat: GFM 마크다운 렌더러"`
+- [x] **Step 3: 실행해서 실패 확인**: `./gradlew test --tests "*MarkdownRendererTest"` → FAIL
+- [x] **Step 4: 구현**: Parser/HtmlRenderer에 위 확장을 모두 등록하고, `HtmlRenderer.builder().escapeHtml(true)`로 설정한다. `alert` 테스트가 기대하는 클래스명이 실제 확장 출력과 다르면 테스트를 실제 출력에 맞춘다(확장의 클래스명이 기준이다).
+- [x] **Step 5: 실행해서 통과 확인** → PASS
+- [x] **Step 6: 커밋**: `git commit -m "feat: GFM 마크다운 렌더러"`
 
 ### Task 4: 공개 화면 (B안 주제별 노트)
 

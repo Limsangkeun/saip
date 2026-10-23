@@ -39,6 +39,11 @@ class MarkdownRendererTest {
 	}
 
 	@Test
+	void blocksJavascriptLinks() {
+		assertThat(renderer.render("[x](javascript:alert(1))")).doesNotContain("javascript:");
+	}
+
+	@Test
 	void escapesRawHtml() {
 		assertThat(renderer.render("<script>alert(1)</script>"))
 			.doesNotContain("<script>")
