@@ -80,8 +80,8 @@ git add -A && git commit -m "chore: Spring Boot 프로젝트와 로컬 PostgreSQ
   - `NoteService.search(String q) -> List<Note>`: 제목이나 본문에 `q`를 포함(대소문자 무시). `%`, `_`, `\`는 이스케이프한다.
   - `NoteService.revisions(String slug) -> List<NoteRevision>`: 최신순(계획 2의 UI에서 사용)
 
-- [ ] **Step 1: 개념 설명**: JPA와 엔티티, Flyway 마이그레이션 파일 규칙, slug가 무엇이고 왜 쓰는지, 트랜잭션
-- [ ] **Step 2: 실패하는 테스트 작성**
+- [x] **Step 1: 개념 설명**: JPA와 엔티티, Flyway 마이그레이션 파일 규칙, slug가 무엇이고 왜 쓰는지, 트랜잭션
+- [x] **Step 2: 실패하는 테스트 작성**
 
 ```java
 // SlugsTest
@@ -95,10 +95,10 @@ assertEquals("spring-boot-4", Slugs.of("  Spring Boot 4! "));
 @Test void searchTreatsPercentLiterally()     // 본문 "100% 완료" 노트와 "100 완료" 노트 → search("100%") 결과 1건
 @Test void recentOrdersByUpdatedAt()          // A 생성, B 생성, A 수정 → recent(10).get(0)이 A
 ```
-- [ ] **Step 3: 실행해서 실패 확인**: `./gradlew test --tests "com.saip.blog.note.*"` → 컴파일 실패
-- [ ] **Step 4: 구현**: `V1__init.sql`, 엔티티, 리포지토리, `Slugs`, `NoteService`. 검색은 JPQL `lower(...) like lower(:p) escape '\'`로 한다.
-- [ ] **Step 5: 실행해서 통과 확인**: 같은 명령 → PASS
-- [ ] **Step 6: 커밋**: `git commit -m "feat: 노트/카테고리/버전 저장 구조와 서비스"`
+- [x] **Step 3: 실행해서 실패 확인**: `./gradlew test --tests "com.saip.blog.note.*"` → 컴파일 실패
+- [x] **Step 4: 구현**: `V1__init.sql`, 엔티티, 리포지토리, `Slugs`, `NoteService`. 검색은 JPQL `lower(...) like lower(:p) escape '\'`로 한다.
+- [x] **Step 5: 실행해서 통과 확인**: 같은 명령 → PASS
+- [x] **Step 6: 커밋**: `git commit -m "feat: 노트/카테고리/버전 저장 구조와 서비스"`
 
 ### Task 3: 마크다운 렌더러
 
