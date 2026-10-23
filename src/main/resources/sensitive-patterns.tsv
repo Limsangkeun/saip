@@ -1,6 +1,6 @@
 # 민감 정보 패턴: 이름<TAB>정규식. Java(서버)와 Python(blog.py)이 함께 읽는다.
 # 두 언어에서 똑같이 동작하는 문법만 쓴다: lookbehind, 소유 수량자, 이름 붙은 그룹 금지.
-# 치환된 값([PASSWORD] 등)과 코드 예시(${DB_PASSWORD}, <비밀번호>, token = getToken() 같은 함수 호출)는 걸리지 않게 한다.
+# 치환된 값([PASSWORD] 등)과 코드 예시(${DB_PASSWORD}, ${X_SECRET:기본값}, <비밀번호>, token = getToken() 같은 함수 호출)는 걸리지 않게 한다.
 # 차이(안전한 쪽): \b가 Java는 ASCII, Python은 유니코드 기준이라 서버가 더 많이 잡을 수 있다.
 aws_access_key	AKIA[0-9A-Z]{16}
 anthropic_key	sk-ant-[A-Za-z0-9_-]{20,}
@@ -12,5 +12,5 @@ slack_token	xox[abprs]-[A-Za-z0-9-]{10,}
 stripe_key	[rs]k_live_[A-Za-z0-9]{20,}
 jwt	eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}
 private_key	-----BEGIN [A-Z ]*PRIVATE KEY-----
-password_assign	(?i)(password|passwd|pwd|secret|token|api[_-]?key)\s*[:=]\s*["']?[^\s"'\[$<{()]{4,}(?![\w.(])
+password_assign	(?i)(password|passwd|pwd|secret|token|api[_-]?key)\s*[:=]\s*["']?[^\s"'\[$<{()]{4,}(?![\w.(}])
 private_ip	\b(10\.\d{1,3}|192\.168|172\.(1[6-9]|2\d|3[01]))\.\d{1,3}\.\d{1,3}\b

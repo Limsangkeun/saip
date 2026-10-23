@@ -87,6 +87,7 @@ class SensitiveScannerTest {
 		assertThat(scanner.scan("secret: ${JWT_SECRET}")).isEmpty();
 		assertThat(scanner.scan("String token = request.getHeader(\"Authorization\");")).isEmpty();
 		assertThat(scanner.scan("password=<비밀번호>")).isEmpty();
+		assertThat(scanner.scan("client-secret: ${GOOGLE_CLIENT_SECRET:unset}")).isEmpty();
 	}
 
 	private static List<String> patterns(List<Finding> findings) {
