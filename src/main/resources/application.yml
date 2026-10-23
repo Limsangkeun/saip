@@ -1,3 +1,6 @@
 spring:
   application:
     name: blog
+  jpa:
+    hibernate:
+      ddl-auto: validate

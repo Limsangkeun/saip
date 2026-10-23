@@ -41,9 +41,9 @@
 **Interfaces:**
 - Produces: 실행 가능한 Spring Boot 앱. `./gradlew bootRun`을 실행하면 `compose.yaml`의 PostgreSQL이 자동으로 뜬다. 테스트는 `@Import(TestcontainersConfiguration.class)`로 PostgreSQL 컨테이너를 쓴다.
 
-- [ ] **Step 1: 개념 설명**: git과 저장소, Gradle과 Gradle Wrapper, Spring Boot 스타터, Docker와 컨테이너(이번에는 DB만), docker compose, Spring Boot의 docker compose 자동 실행, Testcontainers, Flyway(DB 변경 이력 관리)
-- [ ] **Step 2: git 저장소 생성**: `git init -b main` 후 `.gitignore` 작성(Global Constraints 목록 + start.spring.io 기본 항목)
-- [ ] **Step 3: start.spring.io로 프로젝트 생성**
+- [x] **Step 1: 개념 설명**: git과 저장소, Gradle과 Gradle Wrapper, Spring Boot 스타터, Docker와 컨테이너(이번에는 DB만), docker compose, Spring Boot의 docker compose 자동 실행, Testcontainers, Flyway(DB 변경 이력 관리)
+- [x] **Step 2: git 저장소 생성**: `git init -b main` 후 `.gitignore` 작성(Global Constraints 목록 + start.spring.io 기본 항목)
+- [x] **Step 3: start.spring.io로 프로젝트 생성**
 
 ```bash
 curl -s https://start.spring.io/starter.zip -d type=gradle-project -d language=java \
@@ -53,9 +53,9 @@ curl -s https://start.spring.io/starter.zip -d type=gradle-project -d language=j
   -o "$TEMP/blog.zip"
 ```
 압축을 루트에 풀고, 생성된 `compose.yaml`의 이미지를 `postgres:17`로 고정한다(DB 이름, 사용자, 비밀번호는 `blog`). 생성된 `.gitignore`는 Step 2 내용과 합친다.
-- [ ] **Step 4: 보안 임시 설정**: 이 시점에는 Spring Security가 모든 페이지를 막는다. Task 6 전까지 `SecurityConfig`에서 모두 허용(`permitAll`)하고, `// Task 6에서 /api/** 토큰 보호 추가` 주석을 남긴다. 파일: `src/main/java/com/saip/blog/SecurityConfig.java`
-- [ ] **Step 5: 확인**: `./gradlew test`는 PASS(contextLoads), `./gradlew bootRun` 실행 후 `docker ps`에 postgres 컨테이너가 보여야 한다.
-- [ ] **Step 6: 커밋**: 이미 있는 `docs/` 폴더(설계 문서와 이 계획)도 함께 커밋한다.
+- [x] **Step 4: 보안 임시 설정**: 이 시점에는 Spring Security가 모든 페이지를 막는다. Task 6 전까지 `SecurityConfig`에서 모두 허용(`permitAll`)하고, `// Task 6에서 /api/** 토큰 보호 추가` 주석을 남긴다. 파일: `src/main/java/com/saip/blog/SecurityConfig.java`
+- [x] **Step 5: 확인**: `./gradlew test`는 PASS(contextLoads), `./gradlew bootRun` 실행 후 `docker ps`에 postgres 컨테이너가 보여야 한다.
+- [x] **Step 6: 커밋**: 이미 있는 `docs/` 폴더(설계 문서와 이 계획)도 함께 커밋한다.
 
 ```bash
 git add -A && git commit -m "chore: Spring Boot 프로젝트와 로컬 PostgreSQL 구성"
