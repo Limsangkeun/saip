@@ -2,6 +2,7 @@ package com.saip.blog.note;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
@@ -16,6 +17,12 @@ class SlugsTest {
 	@Test
 	void collapsesSymbolsAndTrims() {
 		assertEquals("spring-boot-4", Slugs.of("  Spring Boot 4! "));
+	}
+
+	@Test
+	void symbolOnlyTitleIsRejected() {
+		IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> Slugs.of("!!!"));
+		assertEquals("제목에 글자나 숫자가 있어야 합니다", e.getMessage());
 	}
 
 	@Test

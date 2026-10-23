@@ -19,6 +19,9 @@ class NoteServiceTest {
 	@Autowired
 	NoteService notes;
 
+	@Autowired
+	NoteRevisionRepository revisionRepository;
+
 	@Test
 	void createMakesCategoryWhenMissing() {
 		notes.create("Docker", "deploy", "배포", "# hi");
@@ -65,6 +68,33 @@ class NoteServiceTest {
 
 		assertEquals(1, found.size());
 		assertEquals("진행률", found.get(0).getTitle());
+	}
+
+	@Test
+	void searchTreatsUnderscoreLiterally() {
+		notes.create("밑줄", "misc", "기타", "a_b");
+		notes.create("다른 노트", "misc", "기타", "axb");
+
+		List<Note> found = notes.search("a_b");
+
+		assertEquals(1, found.size());
+		assertEquals("밑줄", found.get(0).getTitle());
+	}
+
+	@Test
+	void deleteRemovesNoteAndRevisions() {
+		notes.create("Docker", "deploy", "배포", "# hi");
+		notes.update("docker", "Docker", "deploy", null, "v2");
+
+		notes.delete("docker");
+
+		assertThrows(NoteNotFoundException.class, () -> notes.get("docker"));
+		assertEquals(0, revisionRepository.count());
+	}
+
+	@Test
+	void deleteMissingThrows() {
+		assertThrows(NoteNotFoundException.class, () -> notes.delete("nope"));
 	}
 
 	@Test

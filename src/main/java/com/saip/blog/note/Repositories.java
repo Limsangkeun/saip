@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Limit;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 interface CategoryRepository extends JpaRepository<Category, Long> {
@@ -21,6 +22,10 @@ interface NoteRepository extends JpaRepository<Note, Long> {
 	boolean existsBySlug(String slug);
 
 	List<Note> findAllByOrderByUpdatedAtDesc(Limit limit);
+
+	@Modifying(flushAutomatically = true, clearAutomatically = true)
+	@Query("delete from Note n where n.slug = :slug")
+	int deleteBySlug(String slug);
 
 	@Query("""
 			select n from Note n

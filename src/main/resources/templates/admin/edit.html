@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::main}, ~{})}">
+<head><title th:text="${slug == null ? '새 노트' : '노트 편집'} + ' · saip'">노트 편집 · saip</title></head>
+<body>
+<main class="main wide">
+  <h1 th:text="${slug == null ? '새 노트' : '노트 편집'}">노트 편집</h1>
+  <p class="form-error" role="alert" th:if="${error}" th:text="${error}">오류</p>
+
+  <form class="editor" method="post"
+        th:action="${slug == null} ? @{/admin/notes} : @{/admin/notes/{s}(s=${slug})}">
+    <div class="editor-fields">
+      <label>제목 <input name="title" th:value="${form.title}" required></label>
+      <label>주제 slug <input name="categorySlug" list="categories" th:value="${form.categorySlug}" required
+                            placeholder="예: deploy"></label>
+      <label>새 주제 이름 <input name="categoryName" th:value="${form.categoryName}" placeholder="새 주제일 때만"></label>
+      <datalist id="categories">
+        <option th:each="c : ${tree}" th:value="${c.slug}" th:text="${c.name}">배포</option>
+      </datalist>
+    </div>
+    <div class="editor-panes">
+      <textarea id="body" name="body" required aria-label="본문 마크다운" th:text="${form.body}"></textarea>
+      <div id="preview" class="markdown preview" aria-label="미리보기"></div>
+    </div>
+    <div class="editor-actions">
+      <button type="submit" class="btn">저장</button>
+      <a th:if="${slug}" th:href="@{/notes/{s}(s=${slug})}">공개 화면 보기</a>
+    </div>
+  </form>
+
+  <form th:if="${slug}" method="post" th:action="@{/admin/notes/{s}/delete(s=${slug})}"
+        data-confirm="이 노트를 삭제할까요? 버전 기록도 함께 지워집니다.">
+    <button type="submit" class="btn danger">노트 삭제</button>
+  </form>
+  <script type="module" th:src="@{/js/admin.js}"></script>
+</main>
+</body>
+</html>

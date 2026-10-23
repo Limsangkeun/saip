@@ -4,6 +4,7 @@
 <body>
 <main class="main">
   <h1>노트 관리</h1>
+  <p><a class="btn" th:href="@{/admin/notes/new}">새 노트</a></p>
   <table class="admin-table">
     <thead><tr><th>제목</th><th>주제</th><th>수정일</th><th></th></tr></thead>
     <tbody th:each="cat : ${tree}">

@@ -43,6 +43,17 @@ public class NoteService {
 		return note;
 	}
 
+	/**
+	 * 노트를 지운다. 버전과 댓글은 DB의 on delete cascade가 함께 지운다. 메모리에 남은 버전·댓글 객체가 지워진 노트를 가리키지 않도록 쿼리 한 번으로 지우고 영속성
+	 * 컨텍스트를 비운다(NoteRepository.deleteBySlug).
+	 */
+	@Transactional
+	public void delete(String slug) {
+		if (notes.deleteBySlug(slug) == 0) {
+			throw new NoteNotFoundException(slug);
+		}
+	}
+
 	public Note get(String slug) {
 		return notes.findBySlug(slug).orElseThrow(() -> new NoteNotFoundException(slug));
 	}
