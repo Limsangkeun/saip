@@ -211,8 +211,8 @@ assertEquals("spring-boot-4", Slugs.of("  Spring Boot 4! "));
   - `url`은 `blog.base-url + "/notes/" + slug`
   - `/api/**`를 제외한 경로는 계속 `permitAll`이다. `/api/**`는 CSRF를 끈다.
 
-- [ ] **Step 1: 개념 설명**: REST API와 HTTP 상태 코드(200/201/400/401/404/409/422), Bearer 토큰, Spring Security 필터 체인, CSRF가 무엇이고 API에서는 왜 끄는지, 환경변수
-- [ ] **Step 2: 실패하는 테스트 작성** (`@TestPropertySource(properties="blog.api-token=test-token")`)
+- [x] **Step 1: 개념 설명**: REST API와 HTTP 상태 코드(200/201/400/401/404/409/422), Bearer 토큰, Spring Security 필터 체인, CSRF가 무엇이고 API에서는 왜 끄는지, 환경변수
+- [x] **Step 2: 실패하는 테스트 작성** (`@TestPropertySource(properties="blog.api-token=test-token")`)
 
 ```java
 @Test void rejectsWithoutToken()        // GET /api/notes (헤더 없음) → 401
@@ -224,10 +224,10 @@ assertEquals("spring-boot-4", Slugs.of("  Spring Boot 4! "));
 @Test void secretInTitleIs422()         // title "password=hunter22" → 422
 @Test void publicPagesStillOpen()       // GET / (토큰 없음) → 200
 ```
-- [ ] **Step 3: 실행해서 실패 확인** → FAIL
-- [ ] **Step 4: 구현**: 토큰 비교는 `MessageDigest.isEqual`로 상수 시간에 한다.
-- [ ] **Step 5: 실행해서 통과 확인**: `./gradlew test` 전체 → PASS
-- [ ] **Step 6: 커밋**: `git commit -m "feat: 토큰 보호 노트 API와 민감 정보 차단"`
+- [x] **Step 3: 실행해서 실패 확인** → FAIL
+- [x] **Step 4: 구현**: 토큰 비교는 `MessageDigest.isEqual`로 상수 시간에 한다.
+- [x] **Step 5: 실행해서 통과 확인**: `./gradlew test` 전체 → PASS
+- [x] **Step 6: 커밋**: `git commit -m "feat: 토큰 보호 노트 API와 민감 정보 차단"`
 
 ### Task 7: `/blog` 스킬과 첫 노트
 
@@ -253,11 +253,11 @@ assertEquals("spring-boot-4", Slugs.of("  Spring Boot 4! "));
     - 종료 코드 2를 받으면 걸린 줄을 치환해서 다시 시도하고, 서버가 422를 주면 같은 방식으로 처리한다.
     - 끝나면 "새로 만듦 / 기존 노트 수정함: 제목 (url)" 한 줄로 보고한다.
 
-- [ ] **Step 1: 개념 설명**: Claude Code 스킬이 무엇인지, 환경변수 설정(Windows 사용자 환경변수), 이 스킬이 대화를 노트로 바꾸는 흐름(Mermaid 다이어그램으로 보여주기)
-- [ ] **Step 2: `blog.py` selftest 먼저 작성** → `python claude-skill/blog/blog.py selftest` 실패 확인
-- [ ] **Step 3: `blog.py` 구현** → selftest PASS
-- [ ] **Step 4: `SKILL.md`, `install.ps1` 작성 후 설치**: `powershell -File claude-skill/install.ps1`
-- [ ] **Step 5: 사용자와 함께 환경변수 설정**: 토큰은 `[Convert]::ToBase64String((1..32|%{Get-Random -Max 256}) -as [byte[]])`로 만들어 사용자 환경변수 `BLOG_TOKEN`과 `BLOG_API_TOKEN`에 같은 값을 넣는다. `BLOG_URL=http://localhost:8080`. 토큰 값은 대화나 파일에 남기지 않는다.
-- [ ] **Step 6: 왕복 확인**: `bootRun` 상태에서 `create` → `get`을 실행해 한글 제목과 본문이 깨지지 않는지 확인하고, 비밀값이 든 파일은 종료 코드 2로 막히는지 확인한다.
+- [x] **Step 1: 개념 설명**: Claude Code 스킬이 무엇인지, 환경변수 설정(Windows 사용자 환경변수), 이 스킬이 대화를 노트로 바꾸는 흐름(Mermaid 다이어그램으로 보여주기)
+- [x] **Step 2: `blog.py` selftest 먼저 작성** → `python claude-skill/blog/blog.py selftest` 실패 확인
+- [x] **Step 3: `blog.py` 구현** → selftest PASS
+- [x] **Step 4: `SKILL.md`, `install.ps1` 작성 후 설치**: `powershell -File claude-skill/install.ps1`
+- [x] **Step 5: 사용자와 함께 환경변수 설정**: 토큰은 `[Convert]::ToBase64String((1..32|%{Get-Random -Max 256}) -as [byte[]])`로 만들어 사용자 환경변수 `BLOG_TOKEN`과 `BLOG_API_TOKEN`에 같은 값을 넣는다. `BLOG_URL=http://localhost:8080`. 토큰 값은 대화나 파일에 남기지 않는다.
+- [x] **Step 6: 왕복 확인**: `bootRun` 상태에서 `create` → `get`을 실행해 한글 제목과 본문이 깨지지 않는지 확인하고, 비밀값이 든 파일은 종료 코드 2로 막히는지 확인한다.
 - [ ] **Step 7: 첫 노트 작성(실사용 검증)**: 새 Claude Code 세션에서 사용자가 `/blog`로 계획 1에서 배운 내용(Gradle, Spring Boot, docker compose, Flyway, Spring Security 토큰 인증 등)을 올린다. 한 번은 새 노트가 생성되고, 비슷한 주제로 다시 요청했을 때는 기존 노트가 보강되는지 확인한다. 화면에서 강조 박스와 Mermaid가 보이는지도 확인한다.
-- [ ] **Step 8: 커밋**: `git commit -m "feat: Claude Code /blog 스킬"`
+- [x] **Step 8: 커밋**: `git commit -m "feat: Claude Code /blog 스킬"`
