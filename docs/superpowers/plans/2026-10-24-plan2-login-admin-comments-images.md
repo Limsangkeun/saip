@@ -101,8 +101,8 @@
   - `site.js`: `export function enhance(root)`(복사 버튼, Mermaid, hljs, 목차를 `root` 안에 적용). 공개 화면은 `enhance(document)`.
   - `admin.js`: 본문 입력 후 400ms 디바운스로 `/admin/preview`에 POST(헤더에 CSRF), 결과를 미리보기 영역에 넣고 `enhance(preview)`.
 
-- [ ] **Step 1: 개념 설명**: 폼 POST와 PRG(Post-Redirect-Get) 패턴, CSRF 토큰이 폼과 fetch에 붙는 방식, 미리보기를 서버에서 렌더링하는 이유(공개 화면과 똑같은 결과 보장), DB `on delete cascade`, Flyway 두 번째 마이그레이션
-- [ ] **Step 2: 실패 테스트 작성**
+- [x] **Step 1: 개념 설명**: 폼 POST와 PRG(Post-Redirect-Get) 패턴, CSRF 토큰이 폼과 fetch에 붙는 방식, 미리보기를 서버에서 렌더링하는 이유(공개 화면과 똑같은 결과 보장), DB `on delete cascade`, Flyway 두 번째 마이그레이션
+- [x] **Step 2: 실패 테스트 작성**
 
 ```java
 // SlugsTest
@@ -120,11 +120,11 @@
 @Test void symbolTitleShowsFormError()          // 제목 "!!!" → 400, "제목에 글자나 숫자" 포함, 입력한 본문 유지
 @Test void webEditorSkipsSecretScan()           // 본문 "password=hunter2222" → 저장됨(302)
 ```
-- [ ] **Step 3: 실행해서 실패 확인**: `./gradlew test --tests '*SlugsTest' --tests '*NoteServiceTest' --tests '*AdminNoteTest'` → FAIL
-- [ ] **Step 4: 구현**: `V2__cascade_revisions.sql`은 `note_revision_note_id_fkey`를 지우고 `on delete cascade`로 다시 만든다. 편집 화면은 왼쪽 입력, 오른쪽 미리보기 2열(768px 이하에서는 위아래). 삭제 버튼은 `confirm()`으로 한 번 묻는다.
-- [ ] **Step 5: 실행해서 통과 확인**: 위 명령 PASS, `./gradlew test` 전체 PASS
-- [ ] **Step 6: 수동 확인**: 브라우저에서 새 노트 작성 → Mermaid·코드 블록이 미리보기와 공개 화면에서 같게 보이는지, 삭제 확인 창이 뜨는지
-- [ ] **Step 7: 커밋**: `git commit -m "feat: 관리자 노트 편집기"`
+- [x] **Step 3: 실행해서 실패 확인**: `./gradlew test --tests '*SlugsTest' --tests '*NoteServiceTest' --tests '*AdminNoteTest'` → FAIL
+- [x] **Step 4: 구현**: `V2__cascade_revisions.sql`은 `note_revision_note_id_fkey`를 지우고 `on delete cascade`로 다시 만든다. 편집 화면은 왼쪽 입력, 오른쪽 미리보기 2열(768px 이하에서는 위아래). 삭제 버튼은 `confirm()`으로 한 번 묻는다.
+- [x] **Step 5: 실행해서 통과 확인**: 위 명령 PASS, `./gradlew test` 전체 PASS
+- [x] **Step 6: 수동 확인**: 브라우저에서 새 노트 작성 → Mermaid·코드 블록이 미리보기와 공개 화면에서 같게 보이는지, 삭제 확인 창이 뜨는지
+- [x] **Step 7: 커밋**: `git commit -m "feat: 관리자 노트 편집기"`
 
 ---
 
