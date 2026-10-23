@@ -259,5 +259,5 @@ assertEquals("spring-boot-4", Slugs.of("  Spring Boot 4! "));
 - [x] **Step 4: `SKILL.md`, `install.ps1` 작성 후 설치**: `powershell -File claude-skill/install.ps1`
 - [x] **Step 5: 사용자와 함께 환경변수 설정**: 토큰은 `[Convert]::ToBase64String((1..32|%{Get-Random -Max 256}) -as [byte[]])`로 만들어 사용자 환경변수 `BLOG_TOKEN`과 `BLOG_API_TOKEN`에 같은 값을 넣는다. `BLOG_URL=http://localhost:8080`. 토큰 값은 대화나 파일에 남기지 않는다.
 - [x] **Step 6: 왕복 확인**: `bootRun` 상태에서 `create` → `get`을 실행해 한글 제목과 본문이 깨지지 않는지 확인하고, 비밀값이 든 파일은 종료 코드 2로 막히는지 확인한다.
-- [ ] **Step 7: 첫 노트 작성(실사용 검증)**: 새 Claude Code 세션에서 사용자가 `/blog`로 계획 1에서 배운 내용(Gradle, Spring Boot, docker compose, Flyway, Spring Security 토큰 인증 등)을 올린다. 한 번은 새 노트가 생성되고, 비슷한 주제로 다시 요청했을 때는 기존 노트가 보강되는지 확인한다. 화면에서 강조 박스와 Mermaid가 보이는지도 확인한다.
+- [x] **Step 7: 첫 노트 작성(실사용 검증)**: 새 Claude Code 세션에서 사용자가 `/blog`로 계획 1에서 배운 내용(Gradle, Spring Boot, docker compose, Flyway, Spring Security 토큰 인증 등)을 올린다. 한 번은 새 노트가 생성되고, 비슷한 주제로 다시 요청했을 때는 기존 노트가 보강되는지 확인한다. 화면에서 강조 박스와 Mermaid가 보이는지도 확인한다.
 - [x] **Step 8: 커밋**: `git commit -m "feat: Claude Code /blog 스킬"`
