@@ -139,8 +139,8 @@ assertEquals("spring-boot-4", Slugs.of("  Spring Boot 4! "));
 - Consumes: `NoteService.tree/recent/get/search`, `MarkdownRenderer.render`, `NoteNotFoundException`
 - Produces: 경로 `GET /`(최근 수정 노트 20개), `GET /notes/{slug}`, `GET /search?q=`. 노트 URL 형식은 `/notes/{slug}`이며, Task 6 API 응답과 스킬이 이 형식을 쓴다.
 
-- [ ] **Step 1: 개념 설명**: MVC와 컨트롤러, Thymeleaf 레이아웃, 정적 파일(CSS, JS)과 CDN, URL 인코딩(한글 주소가 `%EB%..`로 바뀌는 이유)
-- [ ] **Step 2: 실패하는 테스트 작성** (`@SpringBootTest @AutoConfigureMockMvc`, Testcontainers, 테스트 안에서 `NoteService.create`로 데이터 준비)
+- [x] **Step 1: 개념 설명**: MVC와 컨트롤러, Thymeleaf 레이아웃, 정적 파일(CSS, JS)과 CDN, URL 인코딩(한글 주소가 `%EB%..`로 바뀌는 이유)
+- [x] **Step 2: 실패하는 테스트 작성** (`@SpringBootTest @AutoConfigureMockMvc`, Testcontainers, 테스트 안에서 `NoteService.create`로 데이터 준비)
 
 ```java
 @Test void homeShowsTreeAndRecent()   // GET / → 200, body contains 카테고리명 "배포" and 노트 제목 "Docker"
@@ -149,17 +149,17 @@ assertEquals("spring-boot-4", Slugs.of("  Spring Boot 4! "));
 @Test void missingNoteIs404()         // GET /notes/nope → 404
 @Test void searchFinds()              // GET /search?q=compose → contains 해당 노트 제목
 ```
-- [ ] **Step 3: 실행해서 실패 확인** → FAIL
-- [ ] **Step 4: 구현**
+- [x] **Step 3: 실행해서 실패 확인** → FAIL
+- [x] **Step 4: 구현**
   - 레이아웃: 상단 바(사이트명 "saip", 검색창), 왼쪽 주제 트리(현재 노트 강조), 본문, 노트 화면 오른쪽 목차(`<nav id="toc">`). 폭 768px 이하에서는 사이드바를 버튼으로 접는다. 시스템 설정을 따르는 다크 모드를 지원한다.
   - 노트 화면: 제목, "마지막 수정 yyyy-MM-dd", `th:utext`로 렌더링된 본문
   - `site.js`(라이브러리 없이 직접 작성): ① `pre > code`에 복사 버튼 추가 ② `language-mermaid` 블록을 `<div class="mermaid">`로 바꾼 뒤 mermaid 실행 ③ 나머지 코드 블록에 highlight.js 적용 ④ 본문의 h2·h3로 `#toc` 생성
   - highlight.js와 mermaid는 cdnjs 또는 jsdelivr에서 버전을 고정해 불러온다.
   - 강조 박스(`markdown-alert-*`)에 색과 아이콘을 입힌다(팁, 주의, 정보, 중요, 경고).
   - `NoteNotFoundException`이면 404 화면을 보여준다(`@ResponseStatus` 또는 `@ExceptionHandler`).
-- [ ] **Step 5: 실행해서 통과 확인** → PASS
-- [ ] **Step 6: 눈으로 확인**: `./gradlew bootRun` 후 표, 체크리스트, 강조 박스, Java 코드, Mermaid가 들어간 샘플 노트를 `NoteService`로 하나 넣고(임시 `CommandLineRunner` 또는 psql), 브라우저에서 사용자와 함께 확인한다. 샘플 넣기 코드는 커밋하지 않는다.
-- [ ] **Step 7: 커밋**: `git commit -m "feat: 주제별 노트 공개 화면"`
+- [x] **Step 5: 실행해서 통과 확인** → PASS
+- [x] **Step 6: 눈으로 확인**: `./gradlew bootRun` 후 표, 체크리스트, 강조 박스, Java 코드, Mermaid가 들어간 샘플 노트를 `NoteService`로 하나 넣고(임시 `CommandLineRunner` 또는 psql), 브라우저에서 사용자와 함께 확인한다. 샘플 넣기 코드는 커밋하지 않는다.
+- [x] **Step 7: 커밋**: `git commit -m "feat: 주제별 노트 공개 화면"`
 
 ### Task 5: 민감 정보 검사기
 
