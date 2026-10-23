@@ -43,15 +43,32 @@ def note_path(slug):
     return "/api/notes/" + urllib.parse.quote(slug, safe="")
 
 
+def base_url(url):
+    """토큰이 평문으로 나가지 않게 https만 허용한다. 로컬 개발용 http://localhost만 예외."""
+    u = urllib.parse.urlsplit(url)
+    if u.scheme == "https" or (u.scheme == "http" and u.hostname in ("localhost", "127.0.0.1")):
+        return url.rstrip("/")
+    raise ValueError("BLOG_URL은 https:// 여야 합니다(로컬만 http://localhost 허용): " + url)
+
+
+class NoRedirect(urllib.request.HTTPRedirectHandler):
+    # urllib은 리다이렉트할 때 Authorization 헤더를 다른 호스트로도 넘긴다. API는 리다이렉트하지 않으므로 거부한다.
+    def redirect_request(self, *args):
+        return None
+
+
+OPENER = urllib.request.build_opener(NoRedirect)
+
+
 def call(method, path, body=None):
     req = urllib.request.Request(
-        os.environ["BLOG_URL"].rstrip("/") + path,
+        base_url(os.environ["BLOG_URL"]) + path,
         method=method,
         data=json.dumps(body).encode("utf-8") if body is not None else None,
         headers={"Authorization": "Bearer " + os.environ["BLOG_TOKEN"], "Content-Type": "application/json"},
     )
     try:
-        with urllib.request.urlopen(req) as res:
+        with OPENER.open(req) as res:
             print(res.read().decode("utf-8"))
             return 0
     except urllib.error.HTTPError as e:
@@ -77,6 +94,14 @@ def selftest():
     assert scan("t\nACME 사내 시스템", words) == [{"pattern": "redact_word", "line": 2}]
     assert scan("도커 정리\n한글 본문 ✅", words) == []
     assert note_path("왕복") == "/api/notes/%EC%99%95%EB%B3%B5"
+    assert base_url("http://localhost:8080/") == "http://localhost:8080"
+    assert base_url("https://blog.example.com") == "https://blog.example.com"
+    for bad in ("http://blog.example.com", "http://localhost.evil.com", "ftp://localhost"):
+        try:
+            base_url(bad)
+            raise AssertionError(bad)
+        except ValueError:
+            pass
     print("selftest ok")
     return 0
 
