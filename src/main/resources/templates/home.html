@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::main}, ~{})}">
+<head><title>saip · 학습 노트</title></head>
+<body>
+<main class="main">
+  <h1>최근 수정된 노트</h1>
+  <ul class="list">
+    <li th:each="n : ${notes}">
+      <a th:href="@{/notes/{slug}(slug=${n.slug})}" th:text="${n.title}">Docker</a>
+      <span class="meta" th:text="${n.category.name + ' · ' + @dates.day(n.updatedAt)}">배포 · 2026-10-24</span>
+    </li>
+  </ul>
+  <p class="empty" th:if="${#lists.isEmpty(notes)}">아직 노트가 없습니다. Claude Code에서 <code>/blog</code>로 첫 노트를 올려보세요.</p>
+</main>
+</body>
+</html>

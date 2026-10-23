@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::main}, ~{})}">
+<head><title>검색 · saip</title></head>
+<body>
+<main class="main">
+  <h1 th:text="${'“' + q + '” 검색 결과'}">검색 결과</h1>
+  <ul class="list">
+    <li th:each="n : ${notes}">
+      <a th:href="@{/notes/{slug}(slug=${n.slug})}" th:text="${n.title}">Docker</a>
+      <span class="meta" th:text="${n.category.name + ' · ' + @dates.day(n.updatedAt)}">배포 · 2026-10-24</span>
+    </li>
+  </ul>
+  <p class="empty" th:if="${#lists.isEmpty(notes)}">찾는 노트가 없습니다.</p>
+</main>
+</body>
+</html>

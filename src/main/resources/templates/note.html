@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::main}, ~{::aside})}">
+<head><title th:text="${note.title + ' · saip'}">Docker · saip</title></head>
+<body>
+<main class="main">
+  <article>
+    <h1 th:text="${note.title}">Docker</h1>
+    <p class="meta" th:text="${note.category.name + ' · 마지막 수정 ' + @dates.day(note.updatedAt)}">배포 · 마지막 수정 2026-10-24</p>
+    <div class="markdown" th:utext="${html}">본문</div>
+  </article>
+</main>
+<aside class="toc" aria-label="목차"><nav id="toc"></nav></aside>
+</body>
+</html>
