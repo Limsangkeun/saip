@@ -109,10 +109,14 @@ class AdminController {
 		return "redirect:/notes/" + UriUtils.encodePathSegment(note.getSlug(), StandardCharsets.UTF_8);
 	}
 
-	/** 입력 오류는 리다이렉트하지 않고 같은 폼을 400으로 다시 보여준다. 쓰던 본문은 그대로 둔다. */
-	private static String formError(String slug, NoteForm form, RuntimeException e, Model model,
+	/**
+	 * 입력 오류는 리다이렉트하지 않고 같은 폼을 400으로 다시 보여준다. 쓰던 본문은 그대로 둔다. 서비스 트랜잭션이 롤백되면서 영속성 컨텍스트가 비워져 앞서 읽은 사이드바
+	 * 목록을 더 읽을 수 없으므로 다시 조회한다.
+	 */
+	private String formError(String slug, NoteForm form, RuntimeException e, Model model,
 			HttpServletResponse response) {
 		response.setStatus(HttpStatus.BAD_REQUEST.value());
+		model.addAttribute("tree", notes.tree());
 		model.addAttribute("slug", slug);
 		model.addAttribute("form", form);
 		model.addAttribute("error", e.getMessage());
