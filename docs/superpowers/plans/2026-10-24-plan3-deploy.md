@@ -202,20 +202,20 @@
 - Consumes: Task 3 compose 서비스 `db`, `app`과 볼륨 `images`, Task 4 서버
 - Produces: 매일 04:00 KST `s3://<버킷>/daily/saip-YYYYMMDD.tar.gz`(pg_dump `-Fc` + 이미지 폴더), 14일 뒤 자동 삭제
 
-- [ ] **Step 1: 개념 설명**: 백업과 복원(복원해 보기 전에는 백업이 아니다), pg_dump 형식, S3와 수명 주기 규칙(오래된 파일 자동 삭제), IAM 최소 권한(서버가 털려도 백업을 지울 수 없게 `PutObject`만), cron, 로그 확인(`docker compose logs -f --since`), 디스크 확인(`df -h`, `docker system df`)
-- [ ] **Step 2: AWS 준비**(사용자가 콘솔에서, Claude는 정책 JSON을 제공): S3 버킷(서울, 퍼블릭 차단 유지, 기본 암호화), 수명 주기 규칙 `daily/` 14일 후 만료, IAM 사용자 `saip-backup`에 `s3:PutObject` on `arn:aws:s3:::<버킷>/daily/*`만. 액세스 키는 서버에서 `aws configure --profile saip-backup`로 사용자가 직접 입력한다.
-- [ ] **Step 3: `deploy/backup.sh` 작성** (`set -euo pipefail`, 인자 없음, 임시 폴더는 `trap`으로 지움):
+- [x] **Step 1: 개념 설명**: 백업과 복원(복원해 보기 전에는 백업이 아니다), pg_dump 형식, S3와 수명 주기 규칙(오래된 파일 자동 삭제), IAM 최소 권한(서버가 털려도 백업을 지울 수 없게 `PutObject`만), cron, 로그 확인(`docker compose logs -f --since`), 디스크 확인(`df -h`, `docker system df`)
+- [x] **Step 2: AWS 준비**(사용자가 콘솔에서, Claude는 정책 JSON을 제공): S3 버킷(서울, 퍼블릭 차단 유지, 기본 암호화), 수명 주기 규칙 `daily/` 14일 후 만료, IAM 사용자 `saip-backup`에 `s3:PutObject` on `arn:aws:s3:::<버킷>/daily/*`만. 액세스 키는 서버에서 `aws configure --profile saip-backup`로 사용자가 직접 입력한다.
+- [x] **Step 3: `deploy/backup.sh` 작성** (`set -euo pipefail`, 인자 없음, 임시 폴더는 `trap`으로 지움):
   1. `docker compose -f ~/saip/compose.yaml exec -T db pg_dump -U blog -Fc blog > db.dump`
   2. `docker compose ... cp app:/data/images ./images`
   3. `tar czf saip-$(date +%Y%m%d).tar.gz db.dump images`
   4. `aws s3 cp ... s3://$BACKUP_BUCKET/daily/ --profile saip-backup`
   5. 성공하면 `backup ok <파일> <크기>` 한 줄 출력. 실패하면 0이 아닌 종료 코드(cron 로그에 남는다)
   - `BACKUP_BUCKET`은 서버 `.env`에서 읽는다.
-- [ ] **Step 4: 수동 실행 확인**: 서버에서 `bash ~/saip/backup.sh` → `backup ok`, S3 콘솔에 파일. 일부러 버킷 이름을 틀리게 해서 실행 → 0이 아닌 종료 코드와 오류 메시지(Review Focus 5)
-- [ ] **Step 5: 복원 리허설**(Review Focus 5): 백업 파일을 사용자 PC로 받아 로컬 `docker compose`의 빈 DB에 `pg_restore --clean --if-exists`, 이미지 폴더를 `data/images`로 → `bootRun`에서 운영과 같은 노트와 이미지가 보인다. 순서를 `deploy/restore.md`에 기록(서버 전체가 사라졌을 때: 새 인스턴스 → Task 4 Step 5~6 → 복원)
-- [ ] **Step 6: cron 등록**: `crontab -e`에 `0 4 * * * bash ~/saip/backup.sh >> ~/saip/backup.log 2>&1`. 다음 날 `tail ~/saip/backup.log`로 확인(사용자에게 알림 시점을 말해 둔다)
-- [ ] **Step 7: 운영 점검표**를 README에 기록하고 한 번 실행: `docker compose ps`, `docker compose logs --since 1h app`, `free -m`, `df -h`, `docker system df`, 인증서 만료일(`curl -vI https://<도메인> 2>&1 | grep expire`)
-- [ ] **Step 8: 커밋과 노트**: `git commit -m "ops: 매일 S3 백업과 운영 점검표"`, `/blog`로 백업·운영 노트
+- [x] **Step 4: 수동 실행 확인**: 서버에서 `bash ~/saip/backup.sh` → `backup ok`, S3 콘솔에 파일. 일부러 버킷 이름을 틀리게 해서 실행 → 0이 아닌 종료 코드와 오류 메시지(Review Focus 5)
+- [x] **Step 5: 복원 리허설**(Review Focus 5): 백업 파일을 사용자 PC로 받아 로컬 `docker compose`의 빈 DB에 `pg_restore --clean --if-exists`, 이미지 폴더를 `data/images`로 → `bootRun`에서 운영과 같은 노트와 이미지가 보인다. 순서를 `deploy/restore.md`에 기록(서버 전체가 사라졌을 때: 새 인스턴스 → Task 4 Step 5~6 → 복원)
+- [x] **Step 6: cron 등록**: `crontab -e`에 `0 4 * * * bash ~/saip/backup.sh >> ~/saip/backup.log 2>&1`. 다음 날 `tail ~/saip/backup.log`로 확인(사용자에게 알림 시점을 말해 둔다)
+- [x] **Step 7: 운영 점검표**를 README에 기록하고 한 번 실행: `docker compose ps`, `docker compose logs --since 1h app`, `free -m`, `df -h`, `docker system df`, 인증서 만료일(`curl -vI https://<도메인> 2>&1 | grep expire`)
+- [x] **Step 8: 커밋과 노트**: `git commit -m "ops: 매일 S3 백업과 운영 점검표"`, `/blog`로 백업·운영 노트
 
 ---
 
