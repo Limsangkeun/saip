@@ -187,8 +187,8 @@
   - Action은 메이저 버전이 아니라 태그 고정(예: `actions/checkout@v5.x.y`). 작성 시점의 최신 안정 버전을 확인해 넣는다.
 - [x] **Step 4: 첫 실행 확인**: README 한 줄 수정 push → 세 잡 모두 초록, 서버 `docker compose ps`의 이미지 태그가 그 커밋 SHA, 사이트 정상, 노트와 이미지 그대로(Review Focus 3)
 - [x] **Step 5: 실패가 막히는지 확인**: 실패하는 테스트를 넣은 브랜치에서 `workflow_dispatch` → `test` 실패, `image`·`deploy` 건너뜀, 사이트 그대로. 브랜치는 지운다.
-- [ ] **Step 6: 되돌리기 연습**: 서버에서 이전 SHA로 `APP_TAG=<이전 sha> docker compose up -d app` → 정상, 다시 최신으로. README에 방법 기록
-- [ ] **Step 7: 커밋과 노트**: `git commit -m "ci: push하면 테스트, 이미지, 배포"`, `/blog`로 GitHub Actions 노트
+- [x] **Step 6: 되돌리기 연습**: 서버에서 이전 SHA로 `APP_TAG=<이전 sha> docker compose up -d app` → 정상, 다시 최신으로. README에 방법 기록
+- [x] **Step 7: 커밋과 노트**: `git commit -m "ci: push하면 테스트, 이미지, 배포"`, `/blog`로 GitHub Actions 노트
 
 ---
 
