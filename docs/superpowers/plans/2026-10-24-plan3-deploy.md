@@ -41,8 +41,8 @@
 - Consumes: 계획 2의 페이지 체인(`SecurityConfig`), `layout.html`의 메뉴 버튼
 - Produces: 모든 페이지 응답의 `Content-Security-Policy` 헤더. `server.forward-headers-strategy: framework`
 
-- [ ] **Step 1: 개념 설명**: 리버스 프록시가 무엇이고 왜 앞에 두는지(HTTPS 종료, 인증서), `X-Forwarded-Proto/Host` 헤더와 앱이 자기 주소를 아는 방법, 이게 없으면 OAuth 리디렉션이 깨지는 이유, CSP(어떤 출처의 스크립트만 실행할지 브라우저에 알려 주는 헤더)와 인라인 `onclick`이 막히는 이유
-- [ ] **Step 2: 실패 테스트 작성** (`ProxyHeadersTest`, `@SpringBootTest @AutoConfigureMockMvc @Import(TestcontainersConfiguration.class)`):
+- [x] **Step 1: 개념 설명**: 리버스 프록시가 무엇이고 왜 앞에 두는지(HTTPS 종료, 인증서), `X-Forwarded-Proto/Host` 헤더와 앱이 자기 주소를 아는 방법, 이게 없으면 OAuth 리디렉션이 깨지는 이유, CSP(어떤 출처의 스크립트만 실행할지 브라우저에 알려 주는 헤더)와 인라인 `onclick`이 막히는 이유
+- [x] **Step 2: 실패 테스트 작성** (`ProxyHeadersTest`, `@SpringBootTest @AutoConfigureMockMvc @Import(TestcontainersConfiguration.class)`):
 
 ```java
 @Test void oauthRedirectUsesForwardedHttps()
@@ -54,16 +54,16 @@
 @Test void layoutHasNoInlineHandlers()
 // GET / → 본문에 "onclick=" 없음
 ```
-- [ ] **Step 3: 실행해서 실패 확인**: `./gradlew test --tests '*ProxyHeadersTest'` → FAIL 3개
-- [ ] **Step 4: 구현**
+- [x] **Step 3: 실행해서 실패 확인**: `./gradlew test --tests '*ProxyHeadersTest'` → FAIL 3개
+- [x] **Step 4: 구현**
   - `application.yml`: `server.forward-headers-strategy: framework`. 앱 포트는 compose 내부에서만 열리므로 전달 헤더를 믿어도 된다(Caddy가 덮어쓴다).
   - 페이지 체인 `headers(h -> h.contentSecurityPolicy(c -> c.policyDirectives(...)))`. 값:
     `default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; img-src 'self' data:; connect-src 'self' https://cdn.jsdelivr.net; font-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'`
     (`style-src 'unsafe-inline'`은 Mermaid가 SVG 안에 `<style>`을 넣기 때문이다. 스크립트에는 허용하지 않는다.) API 체인에는 넣지 않는다.
   - `layout.html`의 `onclick`을 지우고 `site.js` 맨 위(모든 페이지에서 실행되는 곳)에서 `.menu` 클릭 시 `document.body.classList.toggle('side-open')`.
-- [ ] **Step 5: 실행해서 통과 확인**: 위 명령 → PASS, `./gradlew test` 전체 PASS
-- [ ] **Step 6: Playwright 확인**(Review Focus 2): `bootRun` 후 Mermaid·코드 블록이 있는 노트, 좁은 화면 메뉴 버튼, 관리자 편집기 미리보기와 이미지 붙여넣기, 크게 보기를 열고 `browser_console_messages(level: error)`에 `Content Security Policy` 위반이 0개
-- [ ] **Step 7: 커밋**: `git commit -m "feat: 프록시 전달 헤더와 CSP"`
+- [x] **Step 5: 실행해서 통과 확인**: 위 명령 → PASS, `./gradlew test` 전체 PASS
+- [x] **Step 6: Playwright 확인**(Review Focus 2): `bootRun` 후 Mermaid·코드 블록이 있는 노트, 좁은 화면 메뉴 버튼, 관리자 편집기 미리보기와 이미지 붙여넣기, 크게 보기를 열고 `browser_console_messages(level: error)`에 `Content Security Policy` 위반이 0개
+- [x] **Step 7: 커밋**: `git commit -m "feat: 프록시 전달 헤더와 CSP"`
 
 ---
 
