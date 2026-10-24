@@ -28,6 +28,14 @@ class PageControllerTest {
 	NoteService notes;
 
 	@Test
+	void layoutLinksServedFavicon() throws Exception {
+		mvc.perform(get("/")).andExpect(content().string(containsString("<link rel=\"icon\" href=\"/favicon.svg\"")));
+		mvc.perform(get("/favicon.svg"))
+			.andExpect(status().isOk())
+			.andExpect(content().contentTypeCompatibleWith("image/svg+xml"));
+	}
+
+	@Test
 	void homeShowsTreeAndRecent() throws Exception {
 		notes.create("Docker", "deploy", "배포", "# hi");
 
