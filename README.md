@@ -52,7 +52,26 @@ cd ~/saip; docker compose ps; docker compose logs --since 1h app; docker compose
 cd ~/saip && sed -i 's/^APP_TAG=.*/APP_TAG=<이전 SHA>/' .env && docker compose up -d app
 ```
 
-다음 push가 다시 최신 SHA로 바꾼다.
+다음 push가 다시 최신 SHA로 바꾼다. 배포 때 안 쓰는 이미지는 지우지만, `up`이 ghcr에서 다시 받는다.
+
+### 백업
+
+매일 04:00 KST `deploy/backup.sh`(cron)가 DB(`pg_dump -Fc`)와 이미지를 묶어 S3 `daily/`에 올린다. 14일 뒤 자동 삭제. 서버 키는 올리기만 가능하다. 결과는 `tail ~/saip/backup.log`, 복원은 [`deploy/restore.md`](deploy/restore.md).
+
+### 운영 점검표 (서버에서, 가끔)
+
+```bash
+cd ~/saip
+docker compose ps                                   # 셋 다 Up, db는 healthy
+docker compose logs --since 1h app | grep -iE "error|exception"   # 최근 오류
+tail -3 backup.log                                  # 매일 "backup ok"
+free -m                                             # available이 너무 작지 않은지(스왑 조금은 정상)
+df -h /                                             # 디스크 80% 넘으면 docker system prune
+docker system df                                    # 이미지·볼륨 크기
+curl -svI https://saip.nexus 2>&1 | grep -i "expire date"   # 인증서(Caddy가 자동 갱신)
+```
+
+로그를 계속 보려면 `docker compose logs -f --since 10m app` (Ctrl+C로 나온다).
 
 로컬 리허설(운영과 같은 구성을 `https://localhost`로, 자체 인증서라 `curl -k`):
 

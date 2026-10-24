@@ -69,12 +69,13 @@ jobs:
           printf '%s\n' "${{ secrets.SSH_KEY }}" > ~/.ssh/id_ed25519
           printf '%s\n' "${{ secrets.SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
           chmod 600 ~/.ssh/id_ed25519
-      # 서버 .env의 APP_TAG를 이 커밋으로 바꿔 두면 수동 재시작도 같은 버전을 쓴다
+      # 서버 .env의 APP_TAG를 이 커밋으로 바꿔 두면 수동 재시작도 같은 버전을 쓴다.
+      # 안 쓰는 이미지는 지운다(배포마다 쌓여 디스크가 찬다). 되돌릴 때는 compose가 ghcr에서 다시 받는다
       - name: 서버 반영
         env:
           TARGET: ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}
         run: |
-          scp deploy/compose.yaml deploy/Caddyfile "$TARGET:saip/"
-          ssh "$TARGET" "cd ~/saip && sed -i 's/^APP_TAG=.*/APP_TAG=${{ github.sha }}/' .env && docker compose pull app && docker compose up -d"
+          scp deploy/compose.yaml deploy/Caddyfile deploy/backup.sh "$TARGET:saip/"
+          ssh "$TARGET" "cd ~/saip && sed -i 's/^APP_TAG=.*/APP_TAG=${{ github.sha }}/' .env && docker compose pull app && docker compose up -d && docker image prune -af > /dev/null"
       - name: 상태 확인
         run: curl -fsS -o /dev/null --retry 10 --retry-delay 6 --retry-all-errors "https://${{ secrets.SSH_HOST }}/"

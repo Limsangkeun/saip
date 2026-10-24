@@ -52,3 +52,24 @@ mkdir -p ~/saip && chmod 700 ~/saip
 # PC에서: scp -i ~/.ssh/saip-lightsail.pem deploy/compose.yaml deploy/Caddyfile ubuntu@<고정 IP>:~/saip/
 # ~/saip/.env 는 서버에서 만든다(chmod 600). 키 목록은 deploy/.env.example
 ```
+
+## 5. 매일 백업 (S3)
+
+AWS 콘솔에서(관리자): 서울 리전 버킷(퍼블릭 차단, 기본 암호화), 수명 주기 규칙 `daily/` 14일 후 만료, IAM 사용자 `saip-backup`(콘솔 로그인 없음)에 인라인 정책 하나만:
+
+```json
+{ "Version": "2012-10-17",
+  "Statement": [{ "Effect": "Allow", "Action": "s3:PutObject", "Resource": "arn:aws:s3:::<버킷>/daily/*" }] }
+```
+
+서버에서:
+
+```bash
+sudo snap install aws-cli --classic
+aws configure --profile saip-backup          # 액세스 키는 여기에만 입력한다
+echo BACKUP_BUCKET=<버킷> >> ~/saip/.env     # backup.sh는 배포 때 함께 올라온다
+bash ~/saip/backup.sh                         # "backup ok ..." 확인
+(crontab -l 2>/dev/null; echo "0 4 * * * bash ~/saip/backup.sh >> ~/saip/backup.log 2>&1") | crontab -
+```
+
+복원은 [`restore.md`](restore.md).
