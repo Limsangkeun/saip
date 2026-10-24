@@ -21,16 +21,16 @@ import org.springframework.test.web.servlet.MockMvc;
 @SpringBootTest
 @AutoConfigureMockMvc
 @Import(TestcontainersConfiguration.class)
-class AdminAccessTest {
+public class AdminAccessTest {
 
 	@Autowired
 	MockMvc mvc;
 
-	static OidcLoginRequestPostProcessor user() {
+	public static OidcLoginRequestPostProcessor user() {
 		return oidcLogin().idToken(t -> t.subject("u1").claim("name", "유저"));
 	}
 
-	static OidcLoginRequestPostProcessor admin() {
+	public static OidcLoginRequestPostProcessor admin() {
 		return user().authorities(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER"));
 	}
 

@@ -10,6 +10,10 @@ spring:
             client-id: ${GOOGLE_CLIENT_ID:unset}
             client-secret: ${GOOGLE_CLIENT_SECRET:unset}
             scope: openid,profile,email
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
   jpa:
     hibernate:
       ddl-auto: validate
@@ -18,3 +22,4 @@ blog:
   api-token: ${BLOG_API_TOKEN:}
   base-url: ${BLOG_BASE_URL:http://localhost:8080}
   admin-email: ${BLOG_ADMIN_EMAIL:}
+  image-dir: ${BLOG_IMAGE_DIR:data/images}

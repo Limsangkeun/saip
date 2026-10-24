@@ -39,3 +39,5 @@ out/
 ### VS Code ###
 .vscode/
 .playwright-mcp/
+data/
+__pycache__/

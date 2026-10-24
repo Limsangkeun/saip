@@ -23,11 +23,42 @@ if (body && preview) {
   };
 
   // 입력이 0.4초 멈추면 그린다(디바운스)
-  body.addEventListener('input', () => {
+  const schedule = () => {
     clearTimeout(timer);
     timer = setTimeout(render, 400);
-  });
+  };
+  body.addEventListener('input', schedule);
   render();
+
+  // 이미지 붙여넣기·끌어 놓기 → 업로드 → 커서 자리에 마크다운 삽입
+  const upload = async (file) => {
+    const marker = `![업로드 중: ${file.name || '이미지'}]()`;
+    body.setRangeText(marker + '\n', body.selectionStart, body.selectionEnd, 'end');
+    const form = new FormData();
+    form.append('file', file);
+    const res = await fetch('/admin/images', {
+      method: 'POST',
+      headers: { [meta('_csrf_header')]: meta('_csrf') },
+      body: form,
+    });
+    const result = await res.json().catch(() => ({ error: `업로드 실패 (${res.status})` }));
+    body.value = body.value.replace(marker, res.ok ? result.markdown : `<!-- ${result.error} -->`);
+    schedule();
+  };
+  const images = (list) => [...list].filter((f) => f.type.startsWith('image/'));
+  body.addEventListener('paste', (e) => {
+    const files = images(e.clipboardData.files);
+    if (!files.length) return;
+    e.preventDefault();
+    files.forEach(upload);
+  });
+  body.addEventListener('dragover', (e) => e.preventDefault());
+  body.addEventListener('drop', (e) => {
+    const files = images(e.dataTransfer.files);
+    if (!files.length) return;
+    e.preventDefault();
+    files.forEach(upload);
+  });
 }
 
 for (const form of document.querySelectorAll('form[data-confirm]')) {

@@ -1,10 +1,11 @@
 """블로그 API 클라이언트. Claude Code /blog 스킬이 호출한다. 표준 라이브러리만 사용.
 
-python blog.py list | get <slug> | create <file.json> | update <slug> <file.json> | selftest
+python blog.py list | get <slug> | create <file.json> | update <slug> <file.json> | image <file> | selftest
 환경변수: BLOG_URL, BLOG_TOKEN
 종료 코드: 0 성공, 1 오류, 2 민감 정보 걸림(로컬 검사 또는 서버 422)
 """
 import json
+import mimetypes
 import os
 import re
 import sys
@@ -60,12 +61,25 @@ class NoRedirect(urllib.request.HTTPRedirectHandler):
 OPENER = urllib.request.build_opener(NoRedirect)
 
 
-def call(method, path, body=None):
+def missing_env(environ):
+    return [n for n in ("BLOG_URL", "BLOG_TOKEN") if not environ.get(n)]
+
+
+def multipart(data, filename):
+    """표준 라이브러리에 multipart 도구가 없어서 직접 만든다. 파일 하나(file 필드)만 보낸다."""
+    boundary = "----blogpy" + os.urandom(12).hex()
+    kind = mimetypes.guess_type(filename)[0] or "application/octet-stream"
+    head = (f'--{boundary}\r\nContent-Disposition: form-data; name="file"; filename="{Path(filename).name}"\r\n'
+            f"Content-Type: {kind}\r\n\r\n").encode()
+    return head + data + f"\r\n--{boundary}--\r\n".encode(), "multipart/form-data; boundary=" + boundary
+
+
+def call(method, path, data=None, content_type="application/json"):
     req = urllib.request.Request(
         base_url(os.environ["BLOG_URL"]) + path,
         method=method,
-        data=json.dumps(body).encode("utf-8") if body is not None else None,
-        headers={"Authorization": "Bearer " + os.environ["BLOG_TOKEN"], "Content-Type": "application/json"},
+        data=data,
+        headers={"Authorization": "Bearer " + os.environ["BLOG_TOKEN"], "Content-Type": content_type},
     )
     try:
         with OPENER.open(req) as res:
@@ -89,7 +103,12 @@ def write(method, path, file):
     if findings:
         print(json.dumps({"findings": findings}))
         return 2
-    return call(method, path, note)
+    return call(method, path, json.dumps(note).encode("utf-8"))
+
+
+def image(file):
+    body, content_type = multipart(Path(file).read_bytes(), file)
+    return call("POST", "/api/images", body, content_type)
 
 
 def selftest():
@@ -103,6 +122,12 @@ def selftest():
     assert scan("t\npassword: ${DB_PASSWORD}\nString token = request.getHeader(x);", words) == []
     assert note_findings({"title": "t", "categorySlug": "acme", "categoryName": "사내", "body": "b"}, words) == [
         {"pattern": "redact_word", "line": 0}]
+    body, content_type = multipart(b"PNGDATA", "a.png")
+    boundary = content_type.split("boundary=")[1]
+    assert content_type.startswith("multipart/form-data; boundary=")
+    assert b'name="file"; filename="a.png"' in body and b"Content-Type: image/png" in body
+    assert body.endswith(("--" + boundary + "--\r\n").encode()) and b"PNGDATA" in body
+    assert missing_env({}) == ["BLOG_URL", "BLOG_TOKEN"] and missing_env({"BLOG_URL": "u", "BLOG_TOKEN": "t"}) == []
     assert note_path("왕복") == "/api/notes/%EC%99%95%EB%B3%B5"
     assert base_url("http://localhost:8080/") == "http://localhost:8080"
     assert base_url("https://blog.example.com") == "https://blog.example.com"
@@ -118,6 +143,10 @@ def selftest():
 
 def main(args):
     sys.stdout.reconfigure(encoding="utf-8")
+    missing = missing_env(os.environ)
+    if args and args[0] != "selftest" and missing:
+        print("환경변수가 없습니다: " + ", ".join(missing) + " (README의 '/blog 스킬 설치' 참고, 설정 후 터미널을 다시 켜야 합니다)")
+        return 1
     match args:
         case ["list"]:
             return call("GET", "/api/notes")
@@ -127,6 +156,8 @@ def main(args):
             return write("POST", "/api/notes", file)
         case ["update", slug, file]:
             return write("PUT", note_path(slug), file)
+        case ["image", file]:
+            return image(file)
         case ["selftest"]:
             return selftest()
     print(__doc__)
