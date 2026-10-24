@@ -75,6 +75,26 @@ public class NoteService {
 		return revisions.findByNoteOrderByIdDesc(get(slug));
 	}
 
+	public NoteRevision revision(long id) {
+		return revisions.findById(id).orElseThrow(() -> new NoteNotFoundException("revision " + id));
+	}
+
+	/** 예전 버전의 제목과 본문으로 되돌린다. 현재 내용은 새 버전으로 남겨서 복원도 되돌릴 수 있다. 주제는 그대로 둔다. */
+	@Transactional
+	public Note restore(long revisionId) {
+		NoteRevision old = revision(revisionId);
+		Note note = old.getNote();
+		revisions.save(new NoteRevision(note));
+		note.change(note.getCategory(), old.getTitle(), old.getBodyMd());
+		return note;
+	}
+
+	/** 버전 하나를 지운다. 실수로 들어간 비밀값을 이력에서 없애는 용도. */
+	@Transactional
+	public void deleteRevision(long revisionId) {
+		revisions.delete(revision(revisionId));
+	}
+
 	private Category categoryFor(String slug, String name) {
 		return categories.findBySlug(slug).orElseGet(() -> {
 			if (name == null || name.isBlank()) {

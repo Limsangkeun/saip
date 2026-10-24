@@ -93,6 +93,52 @@ class NoteServiceTest {
 	}
 
 	@Test
+	void restoreRecordsCurrentAsRevision() {
+		notes.create("Docker", "deploy", "배포", "v1");
+		notes.update("docker", "Docker 2", "deploy", null, "v2");
+		long v1 = notes.revisions("docker").get(0).getId();
+
+		notes.restore(v1);
+
+		Note note = notes.get("docker");
+		assertEquals("v1", note.getBodyMd());
+		assertEquals("Docker", note.getTitle());
+		List<NoteRevision> revisions = notes.revisions("docker");
+		assertEquals(2, revisions.size());
+		assertEquals("v2", revisions.get(0).getBodyMd());
+	}
+
+	@Test
+	void restoreKeepsCategory() {
+		notes.create("Docker", "deploy", "배포", "v1");
+		notes.update("docker", "Docker", "ops", "운영", "v2");
+		long v1 = notes.revisions("docker").get(0).getId();
+
+		notes.restore(v1);
+
+		assertEquals("ops", notes.get("docker").getCategory().getSlug());
+	}
+
+	@Test
+	void deleteRevision() {
+		notes.create("Docker", "deploy", "배포", "v1");
+		notes.update("docker", "Docker", "deploy", null, "v2");
+		long v1 = notes.revisions("docker").get(0).getId();
+
+		notes.deleteRevision(v1);
+
+		assertEquals(0, notes.revisions("docker").size());
+		assertEquals("v2", notes.get("docker").getBodyMd());
+	}
+
+	@Test
+	void missingRevisionThrows() {
+		assertThrows(NoteNotFoundException.class, () -> notes.revision(999_999L));
+		assertThrows(NoteNotFoundException.class, () -> notes.restore(999_999L));
+		assertThrows(NoteNotFoundException.class, () -> notes.deleteRevision(999_999L));
+	}
+
+	@Test
 	void deleteMissingThrows() {
 		assertThrows(NoteNotFoundException.class, () -> notes.delete("nope"));
 	}

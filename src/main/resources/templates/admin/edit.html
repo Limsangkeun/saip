@@ -24,6 +24,7 @@
     <div class="editor-actions">
       <button type="submit" class="btn">저장</button>
       <a th:if="${slug}" th:href="@{/notes/{s}(s=${slug})}">공개 화면 보기</a>
+      <a th:if="${slug}" th:href="@{/admin/notes/{s}/revisions(s=${slug})}">버전 기록</a>
     </div>
   </form>
 

@@ -38,6 +38,10 @@ public class NoteRevision {
 		return id;
 	}
 
+	public Note getNote() {
+		return note;
+	}
+
 	public String getTitle() {
 		return title;
 	}

@@ -3,8 +3,10 @@ package com.saip.blog.admin;
 import com.saip.blog.markdown.MarkdownRenderer;
 import com.saip.blog.note.Category;
 import com.saip.blog.note.DuplicateSlugException;
+import com.saip.blog.note.LineDiff;
 import com.saip.blog.note.Note;
 import com.saip.blog.note.NoteNotFoundException;
+import com.saip.blog.note.NoteRevision;
 import com.saip.blog.note.NoteService;
 import jakarta.servlet.http.HttpServletResponse;
 import java.nio.charset.StandardCharsets;
@@ -90,6 +92,35 @@ class AdminController {
 	String delete(@PathVariable String slug) {
 		notes.delete(slug);
 		return "redirect:/admin";
+	}
+
+	@GetMapping("/notes/{slug}/revisions")
+	String revisions(@PathVariable String slug, Model model) {
+		model.addAttribute("note", notes.get(slug));
+		model.addAttribute("revisions", notes.revisions(slug));
+		return "admin/revisions";
+	}
+
+	@GetMapping("/revisions/{id}")
+	String revision(@PathVariable long id, Model model) {
+		NoteRevision revision = notes.revision(id);
+		Note current = revision.getNote();
+		model.addAttribute("revision", revision);
+		model.addAttribute("note", current);
+		model.addAttribute("diff", LineDiff.of(revision.getBodyMd(), current.getBodyMd()));
+		return "admin/revision";
+	}
+
+	@PostMapping("/revisions/{id}/restore")
+	String restore(@PathVariable long id) {
+		return redirectToNote(notes.restore(id));
+	}
+
+	@PostMapping("/revisions/{id}/delete")
+	String deleteRevision(@PathVariable long id) {
+		String slug = notes.revision(id).getNote().getSlug();
+		notes.deleteRevision(id);
+		return "redirect:/admin/notes/" + UriUtils.encodePathSegment(slug, StandardCharsets.UTF_8) + "/revisions";
 	}
 
 	/** 편집기 미리보기. 공개 화면과 같은 렌더러를 써서 결과가 같다. */

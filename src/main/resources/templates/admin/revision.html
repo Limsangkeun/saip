@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::main}, ~{})}">
+<head><title th:text="${note.title + ' 버전 비교 · saip'}">버전 비교 · saip</title></head>
+<body>
+<main class="main wide">
+  <h1>버전 비교</h1>
+  <p class="meta">
+    <a th:href="@{/admin/notes/{s}/revisions(s=${note.slug})}">버전 기록으로</a>
+    · 이 버전 → 현재 본문 (<span class="diff-removed-sample">− 빠진 줄</span>, <span class="diff-added-sample">+ 더해진 줄</span>)
+  </p>
+  <p th:if="${revision.title != note.title}" class="meta"
+     th:text="${'제목: ' + revision.title + ' → ' + note.title}">제목: 예전 → 현재</p>
+
+  <div class="diff">
+    <div th:each="l : ${diff}"
+         th:class="${l.kind().name() == 'ADDED'} ? 'diff-added' : (${l.kind().name() == 'REMOVED'} ? 'diff-removed' : 'diff-same')"
+         th:text="${(l.kind().name() == 'ADDED' ? '+ ' : (l.kind().name() == 'REMOVED' ? '- ' : '  ')) + l.text()}">  줄</div>
+  </div>
+
+  <div class="editor-actions">
+    <form method="post" th:action="@{/admin/revisions/{id}/restore(id=${revision.id})}"
+          data-confirm="이 버전으로 되돌릴까요? 지금 내용은 새 버전으로 남습니다.">
+      <button type="submit" class="btn">이 버전으로 복원</button>
+    </form>
+    <form method="post" th:action="@{/admin/revisions/{id}/delete(id=${revision.id})}"
+          data-confirm="이 버전을 영구히 삭제할까요? 되돌릴 수 없습니다.">
+      <button type="submit" class="btn danger">이 버전 삭제</button>
+    </form>
+  </div>
+  <script type="module" th:src="@{/js/admin.js}"></script>
+</main>
+</body>
+</html>

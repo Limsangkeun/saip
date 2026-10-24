@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::main}, ~{})}">
+<head><title th:text="${note.title + ' 버전 기록 · saip'}">버전 기록 · saip</title></head>
+<body>
+<main class="main">
+  <h1>버전 기록</h1>
+  <p class="meta">
+    <a th:href="@{/admin/notes/{s}/edit(s=${note.slug})}" th:text="${note.title}">Docker</a>
+    · 저장할 때마다 바로 앞 내용이 여기에 남습니다
+  </p>
+  <table class="admin-table">
+    <thead><tr><th>저장 시각</th><th>그때 제목</th></tr></thead>
+    <tbody>
+      <tr th:each="r : ${revisions}">
+        <td><a th:href="@{/admin/revisions/{id}(id=${r.id})}"
+               th:text="${#temporals.format(r.createdAt.atZone(T(java.time.ZoneId).of('Asia/Seoul')), 'yyyy-MM-dd HH:mm:ss')}">2026-10-24 09:00:00</a></td>
+        <td th:text="${r.title}">Docker</td>
+      </tr>
+    </tbody>
+  </table>
+  <p class="empty" th:if="${#lists.isEmpty(revisions)}">아직 저장된 이전 버전이 없습니다.</p>
+</main>
+</body>
+</html>
