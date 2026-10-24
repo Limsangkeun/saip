@@ -13,6 +13,26 @@ Claude Code와 대화하며 배운 내용을 `/blog`로 올리는 개인 학습 
 
 http://localhost:8080
 
+## 운영 구성 (`deploy/`)
+
+```
+인터넷 ─80/443─▶ caddy ─app:8080─▶ app ─db:5432─▶ db
+                 (HTTPS 인증서)      (이미지 볼륨)   (pgdata 볼륨)
+```
+
+- 이미지: `ghcr.io/limsangkeun/saip:<태그>` (`Dockerfile` 멀티스테이지, JRE만 포함)
+- `deploy/compose.yaml`(프로젝트 이름 `saip-prod`), `deploy/Caddyfile`, 비밀값은 `deploy/.env`(`.env.example` 참고, git 제외)
+- 개발용 루트 `compose.yaml`(DB만)과는 별개다.
+
+로컬 리허설(운영과 같은 구성을 `https://localhost`로, 자체 인증서라 `curl -k`):
+
+```powershell
+docker build -t ghcr.io/limsangkeun/saip:latest .
+# deploy/.env: DOMAIN=localhost, POSTGRES_PASSWORD·BLOG_API_TOKEN은 임의 값
+docker compose -f deploy/compose.yaml --env-file deploy/.env up -d
+docker compose -f deploy/compose.yaml --env-file deploy/.env down -v   # 리허설 데이터까지 삭제
+```
+
 ## `/blog` 스킬 설치 (한 번만)
 
 ```powershell

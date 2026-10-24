@@ -1,0 +1,74 @@
+# 운영용: 앱, PostgreSQL, Caddy. 서버의 ~/saip/ 에 이 파일, Caddyfile, .env를 둔다.
+# 바깥에 열리는 포트는 Caddy의 80·443뿐이다. 데이터는 볼륨에 있어서 컨테이너를 다시 만들어도 남는다.
+name: saip-prod
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: 10m
+    max-file: "3"
+
+services:
+  db:
+    image: postgres:17.11
+    environment:
+      POSTGRES_DB: blog
+      POSTGRES_USER: blog
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?}
+    command: postgres -c shared_buffers=64MB
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "blog", "-d", "blog"]
+      interval: 5s
+      retries: 12
+    mem_limit: 256m
+    restart: unless-stopped
+    logging: *logging
+
+  app:
+    image: ghcr.io/${GITHUB_USER:?}/saip:${APP_TAG:-latest}
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/blog
+      SPRING_DATASOURCE_USERNAME: blog
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:?}
+      BLOG_API_TOKEN: ${BLOG_API_TOKEN:?}
+      BLOG_ADMIN_EMAIL: ${BLOG_ADMIN_EMAIL:-}
+      BLOG_BASE_URL: https://${DOMAIN:?}
+      BLOG_IMAGE_DIR: /data/images
+      # 비어 있으면 Spring이 시작을 거부하므로 값이 없을 때는 unset(로그인만 실패)
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-unset}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-unset}
+      JAVA_TOOL_OPTIONS: -Xmx320m -XX:+UseSerialGC
+      TZ: Asia/Seoul
+    volumes:
+      - images:/data/images
+    mem_limit: 512m
+    restart: unless-stopped
+    logging: *logging
+
+  caddy:
+    image: caddy:2.11.6
+    depends_on:
+      - app
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMAIN: ${DOMAIN:?}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    mem_limit: 64m
+    restart: unless-stopped
+    logging: *logging
+
+volumes:
+  pgdata:
+  images:
+  caddy_data:
+  caddy_config:

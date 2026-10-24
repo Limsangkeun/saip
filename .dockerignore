@@ -1,0 +1,10 @@
+.git
+.gradle
+build
+data
+deploy
+docs
+claude-skill
+.superpowers
+.playwright-mcp
+**/.env
