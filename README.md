@@ -24,6 +24,15 @@ http://localhost:8080
 - `deploy/compose.yaml`(프로젝트 이름 `saip-prod`), `deploy/Caddyfile`, 비밀값은 `deploy/.env`(`.env.example` 참고, git 제외)
 - 개발용 루트 `compose.yaml`(DB만)과는 별개다.
 
+서버: AWS Lightsail 1GB(시드니), Ubuntu 24.04, `ubuntu@<고정 IP>`. 처음 만드는 순서는 [`deploy/server-setup.md`](deploy/server-setup.md).
+
+```powershell
+# 서버 접속
+ssh -i ~/.ssh/saip-lightsail.pem ubuntu@<고정 IP>
+# 서버에서: 상태, 로그, 재시작
+cd ~/saip; docker compose ps; docker compose logs --since 1h app; docker compose up -d
+```
+
 로컬 리허설(운영과 같은 구성을 `https://localhost`로, 자체 인증서라 `curl -k`):
 
 ```powershell
