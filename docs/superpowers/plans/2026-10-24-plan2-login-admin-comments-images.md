@@ -180,8 +180,8 @@
   - 라우트: `POST /notes/{slug}/comments`, `POST /notes/{slug}/comments/{id}`(수정), `POST /notes/{slug}/comments/{id}/delete`, 성공 시 `/notes/{slug}#comment-{id}`. `GET /admin/comments`(최근 100개, 노트 링크, 삭제 버튼).
   - 노트 화면 하단: 댓글 목록(작성자 이름, 날짜, `white-space: pre-wrap` 본문), 로그인 시 작성 폼, 본인 댓글에 수정(`<details>` 안의 폼)·삭제, 관리자는 모든 댓글에 삭제. 비로그인은 "로그인하고 댓글 달기" 링크.
 
-- [ ] **Step 1: 개념 설명**: 소유자 확인(Google `sub`가 이메일보다 나은 이유: 바뀌지 않는 고유 번호), 이메일을 저장하지 않는 이유(공개 페이지 노출 위험, 최소 수집), XSS와 출력 이스케이프, 저장형 XSS 예시
-- [ ] **Step 2: 실패 테스트 작성** (`CommentTest`, MockMvc + `oidcLogin()`)
+- [x] **Step 1: 개념 설명**: 소유자 확인(Google `sub`가 이메일보다 나은 이유: 바뀌지 않는 고유 번호), 이메일을 저장하지 않는 이유(공개 페이지 노출 위험, 최소 수집), XSS와 출력 이스케이프, 저장형 XSS 예시
+- [x] **Step 2: 실패 테스트 작성** (`CommentTest`, MockMvc + `oidcLogin()`)
 
 ```java
 @Test void anonymousCannotComment()             // POST 비로그인 + csrf → 3xx oauth2/authorization/google
@@ -195,11 +195,11 @@
 @Test void deletingNoteDeletesComments()        // 댓글 있는 노트를 NoteService.delete → 예외 없음, 댓글 0건
 @Test void emailIsNeverShown()                  // idToken에 email "u1@gmail.com" → 노트 화면에 이메일 없음
 ```
-- [ ] **Step 3: 실행해서 실패 확인**: `./gradlew test --tests '*CommentTest'` → FAIL
-- [ ] **Step 4: 구현**
-- [ ] **Step 5: 실행해서 통과 확인**: 위 명령 PASS, `./gradlew test` 전체 PASS
-- [ ] **Step 6: 수동 확인**: 본인 Google 계정으로 댓글 작성·수정·삭제, 시크릿 창(비로그인)에서 댓글이 보이고 폼은 안 보이는지
-- [ ] **Step 7: 커밋**: `git commit -m "feat: Google 로그인 댓글"`
+- [x] **Step 3: 실행해서 실패 확인**: `./gradlew test --tests '*CommentTest'` → FAIL
+- [x] **Step 4: 구현**
+- [x] **Step 5: 실행해서 통과 확인**: 위 명령 PASS, `./gradlew test` 전체 PASS
+- [x] **Step 6: 수동 확인**: 본인 Google 계정으로 댓글 작성·수정·삭제, 시크릿 창(비로그인)에서 댓글이 보이고 폼은 안 보이는지
+- [x] **Step 7: 커밋**: `git commit -m "feat: Google 로그인 댓글"`
 
 ---
 

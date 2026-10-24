@@ -29,7 +29,7 @@
   </form>
 
   <form th:if="${slug}" method="post" th:action="@{/admin/notes/{s}/delete(s=${slug})}"
-        data-confirm="이 노트를 삭제할까요? 버전 기록도 함께 지워집니다.">
+        data-confirm="이 노트를 삭제할까요? 버전 기록과 댓글도 함께 지워집니다.">
     <button type="submit" class="btn danger">노트 삭제</button>
   </form>
   <script type="module" th:src="@{/js/admin.js}"></script>
