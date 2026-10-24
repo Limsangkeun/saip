@@ -142,8 +142,8 @@
   - `NoteService.revision(long id)` → `NoteRevision`(없으면 `NoteNotFoundException`), `NoteService.restore(long revisionId)` → `Note`(현재 내용을 새 버전으로 남기고 그 버전의 제목·본문으로 바꾼다, 카테고리는 유지), `NoteService.deleteRevision(long revisionId)`
   - 라우트(관리자): `GET /admin/notes/{slug}/revisions`(목록: 시각, 제목), `GET /admin/revisions/{id}`(그 버전 → 현재 본문 diff, 추가는 초록, 삭제는 빨강), `POST /admin/revisions/{id}/restore` → `/notes/{slug}`, `POST /admin/revisions/{id}/delete` → 목록
 
-- [ ] **Step 1: 개념 설명**: diff가 무엇인지(git diff와 같은 것), LCS로 두 글의 공통 줄을 찾는 원리(그림으로), 복원도 "수정"으로 기록하는 이유(되돌리기를 되돌릴 수 있게), 실수로 들어간 비밀값을 이력에서 지우는 용도
-- [ ] **Step 2: 실패 테스트 작성**
+- [x] **Step 1: 개념 설명**: diff가 무엇인지(git diff와 같은 것), LCS로 두 글의 공통 줄을 찾는 원리(그림으로), 복원도 "수정"으로 기록하는 이유(되돌리기를 되돌릴 수 있게), 실수로 들어간 비밀값을 이력에서 지우는 용도
+- [x] **Step 2: 실패 테스트 작성**
 
 ```java
 // LineDiffTest
@@ -158,10 +158,10 @@
 @Test void restoreRedirectsToNote()             // POST .../restore + csrf → 302 /notes/{slug}
 @Test void userCannotSeeRevisions()             // 일반 사용자 → 403
 ```
-- [ ] **Step 3: 실행해서 실패 확인**: `./gradlew test --tests '*LineDiffTest' --tests '*NoteServiceTest' --tests '*AdminRevisionTest'` → FAIL
-- [ ] **Step 4: 구현**
-- [ ] **Step 5: 실행해서 통과 확인**: 위 명령 PASS, `./gradlew test` 전체 PASS
-- [ ] **Step 6: 커밋**: `git commit -m "feat: 노트 버전 비교·복원·삭제"`
+- [x] **Step 3: 실행해서 실패 확인**: `./gradlew test --tests '*LineDiffTest' --tests '*NoteServiceTest' --tests '*AdminRevisionTest'` → FAIL
+- [x] **Step 4: 구현**
+- [x] **Step 5: 실행해서 통과 확인**: 위 명령 PASS, `./gradlew test` 전체 PASS
+- [x] **Step 6: 커밋**: `git commit -m "feat: 노트 버전 비교·복원·삭제"`
 
 ---
 
