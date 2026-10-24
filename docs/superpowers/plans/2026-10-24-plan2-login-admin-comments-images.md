@@ -255,7 +255,7 @@
 **Files:**
 - Modify: `README.md`(Google 설정과 환경변수 3개 추가)
 
-- [ ] **Step 1: README 갱신**: `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `BLOG_ADMIN_EMAIL`, `BLOG_IMAGE_DIR`, 리디렉션 URI
-- [ ] **Step 2: 전체 확인**: `./gradlew test`, `python claude-skill/blog/blog.py selftest` → PASS
-- [ ] **Step 3: 노트 작성**: `/blog`로 계획 2에서 배운 개념(OAuth2·OIDC, CSRF, XSS 이스케이프, 이미지 처리)을 올린다. 기존 노트와 겹치면 보강.
-- [ ] **Step 4: 커밋**: `git commit -m "docs: 계획 2 실행 방법"`
+- [x] **Step 1: README 갱신**: `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `BLOG_ADMIN_EMAIL`, `BLOG_IMAGE_DIR`, 리디렉션 URI
+- [x] **Step 2: 전체 확인**: `./gradlew test`, `python claude-skill/blog/blog.py selftest` → PASS
+- [x] **Step 3: 노트 작성**: `/blog`로 계획 2에서 배운 개념(OAuth2·OIDC, CSRF, XSS 이스케이프, 이미지 처리)을 올린다. 기존 노트와 겹치면 보강.
+- [x] **Step 4: 커밋**: `git commit -m "docs: 계획 2 실행 방법"`

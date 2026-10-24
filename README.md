@@ -29,6 +29,28 @@ $t = [Convert]::ToBase64String($b)
 
 설정한 뒤에는 앱과 Claude Code를 다시 시작한다(실행 중인 프로그램은 새 환경변수를 모른다).
 
+## Google 로그인과 관리자 (한 번만)
+
+1. [Google Cloud Console](https://console.cloud.google.com/apis/credentials) → OAuth 클라이언트 ID(웹 애플리케이션) 만들기
+2. 승인된 리디렉션 URI: `http://localhost:8080/login/oauth2/code/google` (배포하면 `https://도메인/login/oauth2/code/google` 추가)
+3. 일반 PowerShell 창에서 값을 넣는다(대화창이나 저장소에 붙여 넣지 않는다).
+
+```powershell
+[Environment]::SetEnvironmentVariable("GOOGLE_CLIENT_ID", (Read-Host "client id"), "User")
+[Environment]::SetEnvironmentVariable("GOOGLE_CLIENT_SECRET", (Read-Host "client secret"), "User")
+[Environment]::SetEnvironmentVariable("BLOG_ADMIN_EMAIL", "내-구글-주소@gmail.com", "User")
+```
+
+| 환경변수 | 뜻 | 없으면 |
+|---|---|---|
+| `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | Google 로그인 | 앱은 뜨지만 로그인이 실패한다 |
+| `BLOG_ADMIN_EMAIL` | 이 이메일(Google 확인 완료)로 로그인하면 관리자(`/admin`) | 관리자 없음 |
+| `BLOG_IMAGE_DIR` | 업로드 이미지 폴더 | `data/images` (git 제외) |
+
+확인(값은 보이지 않고 True/False만): `"GOOGLE_CLIENT_ID","GOOGLE_CLIENT_SECRET","BLOG_ADMIN_EMAIL" | % { "$_ " + [bool][Environment]::GetEnvironmentVariable($_,"User") }`
+
+## 금지어
+
 회사명처럼 정규식으로 못 잡는 금지어는 `~/.claude/blog-redact.txt`에 한 줄에 하나씩 적는다(저장소에 올리지 않는다).
 
 확인: `python claude-skill/blog/blog.py selftest`
