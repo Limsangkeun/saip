@@ -39,6 +39,8 @@ services:
       BLOG_ADMIN_EMAIL: ${BLOG_ADMIN_EMAIL:-}
       BLOG_BASE_URL: https://${DOMAIN:?}
       BLOG_IMAGE_DIR: /data/images
+      # Tomcat은 Caddy에게서 http로 받으므로 세션 쿠키에 Secure를 직접 붙인다(첫 http 요청에 쿠키가 평문으로 가지 않게)
+      SERVER_SERVLET_SESSION_COOKIE_SECURE: "true"
       # 비어 있으면 Spring이 시작을 거부하므로 값이 없을 때는 unset(로그인만 실패)
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-unset}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-unset}

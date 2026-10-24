@@ -24,6 +24,8 @@ http://localhost:8080
 - `deploy/compose.yaml`(프로젝트 이름 `saip-prod`), `deploy/Caddyfile`, 비밀값은 `deploy/.env`(`.env.example` 참고, git 제외)
 - 개발용 루트 `compose.yaml`(DB만)과는 별개다.
 
+운영: **https://saip.nexus** (Cloudflare Registrar, A 레코드 `@` → 고정 IP, DNS only. 인증서는 Caddy가 자동 발급·갱신)
+
 서버: AWS Lightsail 1GB(시드니), Ubuntu 24.04, `ubuntu@<고정 IP>`. 처음 만드는 순서는 [`deploy/server-setup.md`](deploy/server-setup.md).
 
 ```powershell
@@ -58,10 +60,17 @@ $t = [Convert]::ToBase64String($b)
 
 설정한 뒤에는 앱과 Claude Code를 다시 시작한다(실행 중인 프로그램은 새 환경변수를 모른다).
 
+운영 서버로 올릴 때(현재 설정): `BLOG_URL=https://saip.nexus`, `BLOG_TOKEN`은 서버 `~/saip/.env`의 `BLOG_API_TOKEN`과 같은 값(로컬 개발용 `BLOG_API_TOKEN`과 다르다). 로컬 개발 서버에 올려 보려면 그 창에서만 바꾼다.
+
+```powershell
+$env:BLOG_URL = "http://localhost:8080"
+$env:BLOG_TOKEN = [Environment]::GetEnvironmentVariable("BLOG_API_TOKEN", "User")
+```
+
 ## Google 로그인과 관리자 (한 번만)
 
 1. [Google Cloud Console](https://console.cloud.google.com/apis/credentials) → OAuth 클라이언트 ID(웹 애플리케이션) 만들기
-2. 승인된 리디렉션 URI: `http://localhost:8080/login/oauth2/code/google` (배포하면 `https://도메인/login/oauth2/code/google` 추가)
+2. 승인된 리디렉션 URI: `http://localhost:8080/login/oauth2/code/google`, `https://saip.nexus/login/oauth2/code/google`. 동의 화면은 "프로덕션"으로 게시(방문자도 로그인).
 3. 일반 PowerShell 창에서 값을 넣는다(대화창이나 저장소에 붙여 넣지 않는다).
 
 ```powershell
