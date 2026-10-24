@@ -146,7 +146,7 @@
 - [x] **Step 6: 서버에 배포 파일**: `scp deploy/compose.yaml deploy/Caddyfile` → `~/saip/`. `.env`는 서버에서 직접 만든다(`chmod 600`). 아직 도메인이 없으므로 `DOMAIN=:80`. `POSTGRES_PASSWORD`는 서버에서 `openssl rand -base64 32`로 만들고 출력하지 않는다. 운영 API 토큰은 로컬 개발용과 분리한다: 사용자 PC에서 README의 방법으로 새 값을 만들어 사용자 환경변수 `BLOG_TOKEN_PROD`에 저장하고, 화면에 출력하지 않고 `"BLOG_API_TOKEN=$t" | ssh ... "cat >> ~/saip/.env"`로 서버에 보낸다(PC의 `BLOG_TOKEN`은 Task 5에서 바꾼다).
 - [x] **Step 7: 실행과 확인**: `docker compose up -d` → `http://<고정 IP>/` 200, `free -m`에서 사용 가능 메모리가 남아 있고 `docker compose logs app`에 `Started BlogApplication`
 - [x] **Step 8: 로컬 노트 옮기기**: 로컬(저장소 루트 `compose.yaml`의 `postgres` 서비스)에서 `pg_dump -U blog --data-only --exclude-table=flyway_schema_history -Fc blog` → `scp` → 서버 `docker compose exec -T db pg_restore -U blog -d blog --data-only`(스키마는 앱이 시작할 때 Flyway가 이미 만들었다. 데이터 덤프에 시퀀스 값도 들어 있어 새 노트 id가 겹치지 않는다). 로컬 `data/images/*` → `scp` → `docker compose cp`로 `app:/data/images/`. 확인: 서버 첫 화면의 노트 수가 로컬과 같고 이미지가 보인다.
-- [ ] **Step 9: 커밋과 노트**: `git commit -m "docs: 서버 준비 기록"`, `/blog`로 Lightsail·SSH·스왑 노트
+- [x] **Step 9: 커밋과 노트**: `git commit -m "docs: 서버 준비 기록"`, `/blog`로 Lightsail·SSH·스왑 노트
 
 ---
 
@@ -159,12 +159,12 @@
 - Consumes: Task 4 서버와 고정 IP, Task 1 전달 헤더
 - Produces: `https://<도메인>` 운영, 사용자 PC `BLOG_URL=https://<도메인>`
 
-- [ ] **Step 1: 개념 설명**: 도메인과 등록처, DNS와 A 레코드, TTL, HTTPS 인증서와 Let's Encrypt, Caddy가 80 포트로 소유를 증명하고 인증서를 자동 갱신하는 방식, http→https 리디렉션, HSTS. 등록처 비교(Cloudflare Registrar: 원가 판매·DNS 무료, 가비아: 한국어·국내 결제, Route 53: 호스팅 영역 월 $0.5 추가)를 보여 주고 사용자가 고른다.
-- [ ] **Step 2: 도메인 구매와 DNS**(사용자): A 레코드 `@` → 고정 IP. Cloudflare를 쓰면 프록시(주황 구름)를 끄고 "DNS only". 확인: `nslookup <도메인>`이 고정 IP
-- [ ] **Step 3: Caddy 전환**: 서버 `.env`의 `DOMAIN=<도메인>` → `docker compose up -d caddy app` → `docker compose logs caddy`에 `certificate obtained successfully`. 확인: `curl -I http://<도메인>`이 308로 https, `curl -I https://<도메인>` 200
-- [ ] **Step 4: Google 로그인 운영 설정**(사용자): OAuth 클라이언트에 승인된 리디렉션 URI `https://<도메인>/login/oauth2/code/google` 추가, 동의 화면을 "프로덕션"으로 게시(기본 범위 openid·email·profile만 쓰므로 심사 없음). 확인(Review Focus 1): 운영 사이트에서 Google 로그인 → 관리 화면 열림
-- [ ] **Step 5: `/blog`를 운영으로**: 사용자 PC에서 `BLOG_URL`을 `https://<도메인>`으로, `BLOG_TOKEN`을 `BLOG_TOKEN_PROD` 값으로 바꾸고(출력 없이 환경변수끼리 복사) `BLOG_TOKEN_PROD`를 지운 뒤 터미널을 다시 켠다. 로컬 개발 서버는 이제 `BLOG_API_TOKEN`(옛 값)을 쓰므로, 로컬에 올릴 때는 그 창에서만 `$env:BLOG_URL`·`$env:BLOG_TOKEN`을 바꾼다(README에 기록). `blog.py list`가 운영 노트 목록을 돌려준다.
-- [ ] **Step 6: 커밋과 노트**: `git commit -m "docs: 도메인과 HTTPS"`, `/blog`로 DNS·HTTPS·Caddy 노트(첫 운영 노트)
+- [x] **Step 1: 개념 설명**: 도메인과 등록처, DNS와 A 레코드, TTL, HTTPS 인증서와 Let's Encrypt, Caddy가 80 포트로 소유를 증명하고 인증서를 자동 갱신하는 방식, http→https 리디렉션, HSTS. 등록처 비교(Cloudflare Registrar: 원가 판매·DNS 무료, 가비아: 한국어·국내 결제, Route 53: 호스팅 영역 월 $0.5 추가)를 보여 주고 사용자가 고른다.
+- [x] **Step 2: 도메인 구매와 DNS**(사용자): A 레코드 `@` → 고정 IP. Cloudflare를 쓰면 프록시(주황 구름)를 끄고 "DNS only". 확인: `nslookup <도메인>`이 고정 IP
+- [x] **Step 3: Caddy 전환**: 서버 `.env`의 `DOMAIN=<도메인>` → `docker compose up -d caddy app` → `docker compose logs caddy`에 `certificate obtained successfully`. 확인: `curl -I http://<도메인>`이 308로 https, `curl -I https://<도메인>` 200
+- [x] **Step 4: Google 로그인 운영 설정**(사용자): OAuth 클라이언트에 승인된 리디렉션 URI `https://<도메인>/login/oauth2/code/google` 추가, 동의 화면을 "프로덕션"으로 게시(기본 범위 openid·email·profile만 쓰므로 심사 없음). 확인(Review Focus 1): 운영 사이트에서 Google 로그인 → 관리 화면 열림
+- [x] **Step 5: `/blog`를 운영으로**: 사용자 PC에서 `BLOG_URL`을 `https://<도메인>`으로, `BLOG_TOKEN`을 `BLOG_TOKEN_PROD` 값으로 바꾸고(출력 없이 환경변수끼리 복사) `BLOG_TOKEN_PROD`를 지운 뒤 터미널을 다시 켠다. 로컬 개발 서버는 이제 `BLOG_API_TOKEN`(옛 값)을 쓰므로, 로컬에 올릴 때는 그 창에서만 `$env:BLOG_URL`·`$env:BLOG_TOKEN`을 바꾼다(README에 기록). `blog.py list`가 운영 노트 목록을 돌려준다.
+- [x] **Step 6: 커밋과 노트**: `git commit -m "docs: 도메인과 HTTPS"`, `/blog`로 DNS·HTTPS·Caddy 노트(첫 운영 노트)
 
 ---
 
