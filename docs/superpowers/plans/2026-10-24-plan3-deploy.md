@@ -178,15 +178,15 @@
 - Consumes: Task 3 이미지 이름과 compose, Task 4 서버, Task 5 도메인
 - Produces: `main`에 push하면 테스트 → 이미지(`:<sha>`, `:latest`) → 서버 반영 → 상태 확인
 
-- [ ] **Step 1: 개념 설명**: CI와 CD, 워크플로·잡·스텝, 러너, `GITHUB_TOKEN`과 권한(`packages: write`), GitHub Secrets, 배포 전용 SSH 키, `known_hosts`로 서버를 확인하는 이유, 이미지 태그를 SHA로 남기면 되돌리기 쉬운 이유
-- [ ] **Step 2: 배포 전용 SSH 키**: 사용자 PC에서 `ssh-keygen -t ed25519 -f ~/.ssh/saip-deploy -N ""` → 공개키를 서버 `~/.ssh/authorized_keys`에 추가. Secrets(사용자가 `gh secret set`으로 입력, 값 출력 금지): `SSH_HOST`(도메인), `SSH_USER`(`ubuntu`), `SSH_KEY`(개인키), `SSH_KNOWN_HOSTS`(`ssh-keyscan <도메인>` 결과)
-- [ ] **Step 3: 워크플로 작성** (`on: push: branches: [main]`, `workflow_dispatch`, `concurrency: deploy`):
+- [x] **Step 1: 개념 설명**: CI와 CD, 워크플로·잡·스텝, 러너, `GITHUB_TOKEN`과 권한(`packages: write`), GitHub Secrets, 배포 전용 SSH 키, `known_hosts`로 서버를 확인하는 이유, 이미지 태그를 SHA로 남기면 되돌리기 쉬운 이유
+- [x] **Step 2: 배포 전용 SSH 키**: 사용자 PC에서 `ssh-keygen -t ed25519 -f ~/.ssh/saip-deploy -N ""` → 공개키를 서버 `~/.ssh/authorized_keys`에 추가. Secrets(사용자가 `gh secret set`으로 입력, 값 출력 금지): `SSH_HOST`(도메인), `SSH_USER`(`ubuntu`), `SSH_KEY`(개인키), `SSH_KNOWN_HOSTS`(`ssh-keyscan <도메인>` 결과)
+- [x] **Step 3: 워크플로 작성** (`on: push: branches: [main]`, `workflow_dispatch`, `concurrency: deploy`):
   - `test`: `ubuntu-24.04`, `actions/checkout`, `actions/setup-java`(temurin 21, gradle 캐시), `./gradlew test`(러너에 Docker가 있어 Testcontainers가 돈다), `python claude-skill/blog/blog.py selftest`
   - `image`(`needs: test`, `permissions: packages: write`): `docker/login-action`(GITHUB_TOKEN), `docker/build-push-action`, 태그 `ghcr.io/${{ github.repository_owner }}/saip:${{ github.sha }}`와 `:latest`, GitHub Actions 캐시
   - `deploy`(`needs: image`): Secrets로 `~/.ssh/id_ed25519`와 `known_hosts`를 쓰고, `scp deploy/compose.yaml deploy/Caddyfile` → `ssh ... "cd ~/saip && sed -i 's/^APP_TAG=.*/APP_TAG=<sha>/' .env && docker compose pull app && docker compose up -d"`(`.env`에 `APP_TAG=latest` 줄이 처음부터 있어야 한다. 버전을 `.env`에 남겨서 수동 재시작도 같은 버전을 쓴다). 마지막에 `curl -fsS --retry 10 --retry-delay 6 --retry-all-errors https://<도메인>/` 실패면 잡 실패
   - Action은 메이저 버전이 아니라 태그 고정(예: `actions/checkout@v5.x.y`). 작성 시점의 최신 안정 버전을 확인해 넣는다.
-- [ ] **Step 4: 첫 실행 확인**: README 한 줄 수정 push → 세 잡 모두 초록, 서버 `docker compose ps`의 이미지 태그가 그 커밋 SHA, 사이트 정상, 노트와 이미지 그대로(Review Focus 3)
-- [ ] **Step 5: 실패가 막히는지 확인**: 실패하는 테스트를 넣은 브랜치에서 `workflow_dispatch` → `test` 실패, `image`·`deploy` 건너뜀, 사이트 그대로. 브랜치는 지운다.
+- [x] **Step 4: 첫 실행 확인**: README 한 줄 수정 push → 세 잡 모두 초록, 서버 `docker compose ps`의 이미지 태그가 그 커밋 SHA, 사이트 정상, 노트와 이미지 그대로(Review Focus 3)
+- [x] **Step 5: 실패가 막히는지 확인**: 실패하는 테스트를 넣은 브랜치에서 `workflow_dispatch` → `test` 실패, `image`·`deploy` 건너뜀, 사이트 그대로. 브랜치는 지운다.
 - [ ] **Step 6: 되돌리기 연습**: 서버에서 이전 SHA로 `APP_TAG=<이전 sha> docker compose up -d app` → 정상, 다시 최신으로. README에 방법 기록
 - [ ] **Step 7: 커밋과 노트**: `git commit -m "ci: push하면 테스트, 이미지, 배포"`, `/blog`로 GitHub Actions 노트
 
