@@ -32,6 +32,15 @@ class NoteServiceTest {
 	}
 
 	@Test
+	void treeHidesCategoriesWithoutNotes() {
+		notes.create("Docker", "deploy", "배포", "# hi");
+
+		notes.update("docker", "Docker", "tools", "도구", "# hi");
+
+		assertEquals(List.of("tools"), notes.tree().stream().map(Category::getSlug).toList());
+	}
+
+	@Test
 	void createWithoutCategoryNameForNewCategoryFails() {
 		assertThrows(IllegalArgumentException.class, () -> notes.create("Docker", "deploy", null, "# hi"));
 	}

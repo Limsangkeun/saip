@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.context.annotation.Import;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.OidcLoginRequestPostProcessor;
 import org.springframework.test.web.servlet.MockMvc;
@@ -43,6 +44,9 @@ class CommentTest {
 
 	@Autowired
 	CommentService comments;
+
+	@Autowired
+	JdbcTemplate jdbc;
 
 	Note note;
 
@@ -191,6 +195,17 @@ class CommentTest {
 		notes.delete("docker");
 
 		assertEquals(0, comments.recent(10).size());
+	}
+
+	@Test
+	void adminDeletesNoteWithRevisionsAndComments() throws Exception {
+		notes.update("docker", "Docker", "deploy", null, "v2");
+		comments.add("docker", "u1", "유저", "댓글");
+
+		mvc.perform(post("/admin/notes/docker/delete").with(admin()).with(csrf())).andExpect(redirectedUrl("/admin"));
+
+		assertEquals(0, comments.recent(10).size());
+		assertEquals(0, jdbc.queryForObject("select count(*) from note_revision", Integer.class));
 	}
 
 	@Test

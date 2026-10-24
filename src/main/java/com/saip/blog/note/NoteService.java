@@ -58,8 +58,9 @@ public class NoteService {
 		return notes.findBySlug(slug).orElseThrow(() -> new NoteNotFoundException(slug));
 	}
 
+	/** 노트가 있는 주제만. 마지막 노트를 지우거나 옮긴 주제가 빈 제목으로 남지 않게 한다(주제 행은 DB에 남아 다시 쓰면 재사용). */
 	public List<Category> tree() {
-		return categories.findAllByOrderByName();
+		return categories.findAllByOrderByName().stream().filter(c -> !c.getNotes().isEmpty()).toList();
 	}
 
 	public List<Note> recent(int limit) {

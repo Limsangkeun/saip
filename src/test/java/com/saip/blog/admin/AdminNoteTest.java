@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
@@ -76,6 +77,12 @@ class AdminNoteTest {
 
 		assertEquals("v2", notes.get("docker").getBodyMd());
 		assertEquals(1, notes.revisions("docker").size());
+	}
+
+	@Test
+	void editorSessionOutlivesLongWriting(@Autowired Environment env) {
+		// 세션이 끝나면 CSRF 토큰도 사라져 저장이 403이 되고 쓰던 글을 잃는다(기본 30분)
+		assertEquals("7d", env.getProperty("server.servlet.session.timeout"));
 	}
 
 	@Test

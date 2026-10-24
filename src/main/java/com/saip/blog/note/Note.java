@@ -40,6 +40,11 @@ public class Note {
 	}
 
 	void change(Category category, String title, String bodyMd) {
+		if (this.category != category) {
+			// 양방향 목록도 맞춘다. 같은 트랜잭션에서 주제 목록을 다시 읽을 때 옛 주제에 남아 보이지 않게
+			this.category.getNotes().remove(this);
+			category.getNotes().add(this);
+		}
 		this.category = category;
 		this.title = title;
 		this.bodyMd = bodyMd;

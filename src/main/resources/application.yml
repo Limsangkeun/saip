@@ -1,3 +1,8 @@
+server:
+  servlet:
+    session:
+      # 기본 30분이면 편집기를 열어 둔 사이 세션과 CSRF 토큰이 사라져 저장이 403이 된다. 관리자 한 명뿐인 블로그라 길게.
+      timeout: 7d
 spring:
   application:
     name: blog

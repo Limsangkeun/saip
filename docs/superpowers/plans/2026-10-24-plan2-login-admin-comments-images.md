@@ -27,7 +27,7 @@
 
 ## Review Focus
 
-1. **관리자 사칭:** 이메일 대소문자가 다르거나(`Admin@Gmail.com`), Google이 확인하지 않은 이메일(`email_verified=false`)이면 관리자가 되면 안 된다(Task 1 테스트).
+1. **관리자 사칭:** Google이 확인하지 않은 이메일(`email_verified=false`)이면 관리자가 되면 안 된다. 대소문자만 다른 같은 주소(`Admin@Gmail.com`)는 같은 사람이므로 관리자다(Global Constraints, Task 1 테스트).
 2. **CSRF 없는 POST:** 다른 사이트가 관리자의 브라우저로 노트 삭제나 댓글 작성을 보내면 403이어야 한다(Task 2, Task 4 테스트).
 3. **댓글 속 `<script>`:** 실행되지 않고 글자로 보여야 한다(Task 4 테스트).
 4. **이미지 폭탄과 가짜 이미지:** 확장자만 `.png`인 텍스트 파일이나 50000×50000처럼 거대한 이미지는 메모리를 쓰기 전에 400으로 거절해야 한다(Task 5 테스트).
