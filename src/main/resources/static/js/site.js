@@ -105,7 +105,12 @@ function buildToc(root) {
 }
 
 // ⑤ 좁은 화면 메뉴 버튼 (CSP가 인라인 onclick을 막으므로 여기서 연결)
-document.querySelector('.menu')?.addEventListener('click', () => document.body.classList.toggle('side-open'));
+// ☰: 좁은 화면은 사이드바를 덮어 열고, 넓은 화면은 접고 펴며 상태를 기억한다
+document.querySelector('.menu')?.addEventListener('click', () => {
+  if (matchMedia('(max-width: 768px)').matches) return document.body.classList.toggle('side-open');
+  const closed = document.documentElement.classList.toggle('side-closed');
+  try { localStorage.setItem('side', closed ? 'closed' : 'open'); } catch {}
+});
 
 const article = document.querySelector('article .markdown');
 if (article) {

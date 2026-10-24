@@ -13,10 +13,11 @@
         integrity="sha384-eFTL69TLRZTkNfYZOLM+G04821K1qZao/4QLJbet1pP4tcF+fdXq/9CdqAbWRl/L" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css" media="(prefers-color-scheme: dark)"
         integrity="sha384-wH75j6z1lH97ZOpMOInqhgKzFkAInZPPSPlZpYKYTOqsaizPvhQZmAtLcPKXpLyH" crossorigin="anonymous">
+  <script th:src="@{/js/side.js}"></script>
 </head>
 <body>
 <header class="topbar">
-  <button class="menu" type="button" aria-label="주제 목록 열기">☰</button>
+  <button class="menu" type="button" aria-label="주제 목록 접기·펴기" title="주제 목록 접기·펴기">☰</button>
   <a class="brand" th:href="@{/}">saip<span class="brand-dot">.</span><span class="brand-sub">learning notes</span></a>
   <form class="search" th:action="@{/search}" method="get" role="search">
     <input type="search" name="q" placeholder="노트 검색" aria-label="노트 검색" th:value="${q}">

@@ -129,7 +129,7 @@ button.link:hover { text-decoration: underline; }
   border: 1px solid var(--line); border-radius: 6px; background: var(--bg); color: var(--fg); font: inherit; font-size: 15px;
 }
 .comment-form { margin-top: 16px; }
-.menu { display: none; background: none; border: 1px solid var(--line); border-radius: 6px; color: var(--fg); font-size: 18px; padding: 2px 10px; cursor: pointer; }
+.menu { background: none; border: 1px solid var(--line); border-radius: 6px; color: var(--fg); font-size: 18px; padding: 2px 10px; cursor: pointer; }
 
 /* 3단 배치: 주제 트리 | 본문 | 목차 */
 .page {
@@ -229,8 +229,17 @@ button.link:hover { text-decoration: underline; }
   .page { grid-template-columns: 240px minmax(0, 1fr); }
   .toc { display: none; }
 }
+/* 넓은 화면: ☰로 사이드바를 접으면 본문이 그 자리를 쓴다 */
+@media (min-width: 769px) {
+  .side-closed .side { display: none; }
+  .side-closed .page { grid-template-columns: minmax(0, 1fr) 220px; }
+  .side-closed .main { margin-inline: auto; }
+  .side-closed .main.wide { grid-column: 1 / -1; }
+}
+@media (min-width: 769px) and (max-width: 1100px) {
+  .side-closed .page { grid-template-columns: minmax(0, 1fr); }
+}
 @media (max-width: 768px) {
-  .menu { display: block; }
   .search input { width: 140px; }
   .page { grid-template-columns: minmax(0, 1fr); }
   .side { display: none; position: fixed; top: 56px; left: 0; right: 0; bottom: 0; z-index: 9; max-height: none; }

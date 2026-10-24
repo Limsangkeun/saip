@@ -36,6 +36,15 @@ class PageControllerTest {
 	}
 
 	@Test
+	void layoutRestoresSidebarStateBeforeRender() throws Exception {
+		// head에서 동기로 실행해야 접힌 사이드바가 그려졌다 사라지는 깜빡임이 없다
+		String html = mvc.perform(get("/")).andReturn().getResponse().getContentAsString();
+		int script = html.indexOf("<script src=\"/js/side.js\"></script>");
+		org.junit.jupiter.api.Assertions.assertTrue(script > 0 && script < html.indexOf("</head>"), "side.js가 head 안에 있어야 한다");
+		mvc.perform(get("/js/side.js")).andExpect(status().isOk());
+	}
+
+	@Test
 	void homeShowsTreeAndRecent() throws Exception {
 		notes.create("Docker", "deploy", "배포", "# hi");
 
