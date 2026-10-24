@@ -78,8 +78,8 @@
 - Consumes: `ImageStore.dir()`, 테이블 `note.body_md`, `note_revision.body_md`
 - Produces: `ImageCleanup` (`@Component`): `public int deleteUnused(Instant now)` 지운 파일 수를 돌려준다. `@Scheduled(cron = "0 30 4 * * *", zone = "Asia/Seoul") void daily()`가 `deleteUnused(Instant.now())`를 부른다.
 
-- [ ] **Step 1: 개념 설명**: 내용 해시 파일명이라 여러 노트가 한 파일을 함께 쓸 수 있다는 점, 그래서 노트 삭제 때 바로 지우지 않고 "아무 데서도 안 쓰는 파일"을 따로 찾는 이유, 유예 기간(업로드 직후 저장 전), `@Scheduled`와 cron 표현식
-- [ ] **Step 2: 실패 테스트 작성** (`ImageCleanupTest`, `@SpringBootTest @Import(TestcontainersConfiguration.class) @Transactional`, `@TestPropertySource(properties = "blog.image-dir=build/test-cleanup")`, 각 테스트 전에 폴더를 비운다. 파일 시각은 `Files.setLastModifiedTime`으로 조절한다):
+- [x] **Step 1: 개념 설명**: 내용 해시 파일명이라 여러 노트가 한 파일을 함께 쓸 수 있다는 점, 그래서 노트 삭제 때 바로 지우지 않고 "아무 데서도 안 쓰는 파일"을 따로 찾는 이유, 유예 기간(업로드 직후 저장 전), `@Scheduled`와 cron 표현식
+- [x] **Step 2: 실패 테스트 작성** (`ImageCleanupTest`, `@SpringBootTest @Import(TestcontainersConfiguration.class) @Transactional`, `@TestPropertySource(properties = "blog.image-dir=build/test-cleanup")`, 각 테스트 전에 폴더를 비운다. 파일 시각은 `Files.setLastModifiedTime`으로 조절한다):
 
 ```java
 @Test void deletesOldUnreferencedImage()        // 2일 전 파일, 어디서도 참조 없음 → 삭제, 반환 1
@@ -88,11 +88,11 @@
 @Test void keepsFreshUpload()                   // 1시간 전 파일, 참조 없음 → 남음
 @Test void ignoresFilesNotNamedByHash()         // "notes.txt", 2일 전 → 남음 (우리가 만든 파일만 지운다)
 ```
-- [ ] **Step 3: 실행해서 실패 확인**: `./gradlew test --tests '*ImageCleanupTest'` → 컴파일 실패
+- [x] **Step 3: 실행해서 실패 확인**: `./gradlew test --tests '*ImageCleanupTest'` → 컴파일 실패
   테스트에서 노트는 `NoteService`로 만들고 `EntityManager.flush()`한 뒤 정리를 부른다(같은 트랜잭션의 `JdbcTemplate`이 보도록).
-- [ ] **Step 4: 구현**: 폴더에서 `^[0-9a-f]{32}\.(png|jpg|gif)$`이고 수정 시각이 `now - 1일`보다 이전인 파일만 후보로 삼는다. 후보마다 `JdbcTemplate`으로 `select exists(select 1 from note where body_md like ?) or exists(select 1 from note_revision where body_md like ?)`(`'%/images/' + name + '%'`)를 묻고, 참조가 없으면 지운다. 지운 파일 이름을 INFO 로그로 남긴다.
-- [ ] **Step 5: 실행해서 통과 확인**: 위 명령 → PASS, `./gradlew test` 전체 PASS
-- [ ] **Step 6: 커밋**: `git commit -m "feat: 안 쓰는 이미지 매일 정리"`
+- [x] **Step 4: 구현**: 폴더에서 `^[0-9a-f]{32}\.(png|jpg|gif)$`이고 수정 시각이 `now - 1일`보다 이전인 파일만 후보로 삼는다. 후보마다 `JdbcTemplate`으로 `select exists(select 1 from note where body_md like ?) or exists(select 1 from note_revision where body_md like ?)`(`'%/images/' + name + '%'`)를 묻고, 참조가 없으면 지운다. 지운 파일 이름을 INFO 로그로 남긴다.
+- [x] **Step 5: 실행해서 통과 확인**: 위 명령 → PASS, `./gradlew test` 전체 PASS
+- [x] **Step 6: 커밋**: `git commit -m "feat: 안 쓰는 이미지 매일 정리"`
 
 ---
 
