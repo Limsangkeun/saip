@@ -138,14 +138,14 @@
 - Consumes: Task 3의 이미지 이름, compose, `.env` 키
 - Produces: 서버 `ubuntu@<고정 IP>`의 `~/saip/{compose.yaml,Caddyfile,.env}`, 공개 패키지 `ghcr.io/<user>/saip:latest`, GitHub 공개 저장소 `<user>/saip`
 
-- [ ] **Step 1: 개념 설명**: VPS와 Lightsail(EC2와의 차이), 리전 선택(서울), SSH 키 방식 로그인, 고정 IP(인스턴스를 다시 만들어도 주소 유지), 방화벽, 스왑(메모리가 모자랄 때 디스크를 빌림), 컨테이너 레지스트리와 공개 패키지
-- [ ] **Step 2: GitHub 저장소**: 사용자가 공개 저장소 `saip`을 만든다(`gh repo create saip --public --source . --push`). 올리기 전에 `git ls-files`에 `.env`, `data/`, 토큰이 없는지 확인한다.
-- [ ] **Step 3: 첫 이미지 올리기**: `gh auth refresh -s write:packages` → `gh auth token | docker login ghcr.io -u <user> --password-stdin`(토큰은 출력하지 않는다) → `docker push ghcr.io/<user>/saip:latest`. 사용자가 GitHub 패키지 설정에서 공개로 바꾸고 저장소와 연결한다. 확인: 로그아웃 상태 `docker pull` 성공.
-- [ ] **Step 4: Lightsail 인스턴스**(사용자가 콘솔에서): 서울, Linux/Unix, Ubuntu 24.04 LTS, 1GB 플랜, 새 SSH 키 쌍 다운로드(`~/.ssh/saip-lightsail.pem`). 고정 IP 생성·연결. 네트워킹 탭 IPv4 방화벽: SSH 22, HTTP 80, HTTPS 443만.
-- [ ] **Step 5: 서버 기본 설정**(SSH로 접속해 함께 실행, `deploy/server-setup.md`에 기록): `apt update && apt upgrade`, 스왑 2GB(`fallocate -l 2G /swapfile`, `mkswap`, `swapon`, `/etc/fstab`), `vm.swappiness=10`, 시간대 `Asia/Seoul`, Docker 공식 저장소로 Docker Engine과 compose 플러그인 설치, `ubuntu`를 `docker` 그룹에 추가, 무인 보안 업데이트(`unattended-upgrades`) 켜기
-- [ ] **Step 6: 서버에 배포 파일**: `scp deploy/compose.yaml deploy/Caddyfile` → `~/saip/`. `.env`는 서버에서 직접 만든다(`chmod 600`). 아직 도메인이 없으므로 `DOMAIN=:80`. `POSTGRES_PASSWORD`는 서버에서 `openssl rand -base64 32`로 만들고 출력하지 않는다. 운영 API 토큰은 로컬 개발용과 분리한다: 사용자 PC에서 README의 방법으로 새 값을 만들어 사용자 환경변수 `BLOG_TOKEN_PROD`에 저장하고, 화면에 출력하지 않고 `"BLOG_API_TOKEN=$t" | ssh ... "cat >> ~/saip/.env"`로 서버에 보낸다(PC의 `BLOG_TOKEN`은 Task 5에서 바꾼다).
-- [ ] **Step 7: 실행과 확인**: `docker compose up -d` → `http://<고정 IP>/` 200, `free -m`에서 사용 가능 메모리가 남아 있고 `docker compose logs app`에 `Started BlogApplication`
-- [ ] **Step 8: 로컬 노트 옮기기**: 로컬(저장소 루트 `compose.yaml`의 `postgres` 서비스)에서 `pg_dump -U blog --data-only --exclude-table=flyway_schema_history -Fc blog` → `scp` → 서버 `docker compose exec -T db pg_restore -U blog -d blog --data-only`(스키마는 앱이 시작할 때 Flyway가 이미 만들었다. 데이터 덤프에 시퀀스 값도 들어 있어 새 노트 id가 겹치지 않는다). 로컬 `data/images/*` → `scp` → `docker compose cp`로 `app:/data/images/`. 확인: 서버 첫 화면의 노트 수가 로컬과 같고 이미지가 보인다.
+- [x] **Step 1: 개념 설명**: VPS와 Lightsail(EC2와의 차이), 리전 선택(서울), SSH 키 방식 로그인, 고정 IP(인스턴스를 다시 만들어도 주소 유지), 방화벽, 스왑(메모리가 모자랄 때 디스크를 빌림), 컨테이너 레지스트리와 공개 패키지
+- [x] **Step 2: GitHub 저장소**: 사용자가 공개 저장소 `saip`을 만든다(`gh repo create saip --public --source . --push`). 올리기 전에 `git ls-files`에 `.env`, `data/`, 토큰이 없는지 확인한다.
+- [x] **Step 3: 첫 이미지 올리기**: `gh auth refresh -s write:packages` → `gh auth token | docker login ghcr.io -u <user> --password-stdin`(토큰은 출력하지 않는다) → `docker push ghcr.io/<user>/saip:latest`. 사용자가 GitHub 패키지 설정에서 공개로 바꾸고 저장소와 연결한다. 확인: 로그아웃 상태 `docker pull` 성공.
+- [x] **Step 4: Lightsail 인스턴스**(사용자가 콘솔에서): 서울, Linux/Unix, Ubuntu 24.04 LTS, 1GB 플랜, 새 SSH 키 쌍 다운로드(`~/.ssh/saip-lightsail.pem`). 고정 IP 생성·연결. 네트워킹 탭 IPv4 방화벽: SSH 22, HTTP 80, HTTPS 443만.
+- [x] **Step 5: 서버 기본 설정**(SSH로 접속해 함께 실행, `deploy/server-setup.md`에 기록): `apt update && apt upgrade`, 스왑 2GB(`fallocate -l 2G /swapfile`, `mkswap`, `swapon`, `/etc/fstab`), `vm.swappiness=10`, 시간대 `Asia/Seoul`, Docker 공식 저장소로 Docker Engine과 compose 플러그인 설치, `ubuntu`를 `docker` 그룹에 추가, 무인 보안 업데이트(`unattended-upgrades`) 켜기
+- [x] **Step 6: 서버에 배포 파일**: `scp deploy/compose.yaml deploy/Caddyfile` → `~/saip/`. `.env`는 서버에서 직접 만든다(`chmod 600`). 아직 도메인이 없으므로 `DOMAIN=:80`. `POSTGRES_PASSWORD`는 서버에서 `openssl rand -base64 32`로 만들고 출력하지 않는다. 운영 API 토큰은 로컬 개발용과 분리한다: 사용자 PC에서 README의 방법으로 새 값을 만들어 사용자 환경변수 `BLOG_TOKEN_PROD`에 저장하고, 화면에 출력하지 않고 `"BLOG_API_TOKEN=$t" | ssh ... "cat >> ~/saip/.env"`로 서버에 보낸다(PC의 `BLOG_TOKEN`은 Task 5에서 바꾼다).
+- [x] **Step 7: 실행과 확인**: `docker compose up -d` → `http://<고정 IP>/` 200, `free -m`에서 사용 가능 메모리가 남아 있고 `docker compose logs app`에 `Started BlogApplication`
+- [x] **Step 8: 로컬 노트 옮기기**: 로컬(저장소 루트 `compose.yaml`의 `postgres` 서비스)에서 `pg_dump -U blog --data-only --exclude-table=flyway_schema_history -Fc blog` → `scp` → 서버 `docker compose exec -T db pg_restore -U blog -d blog --data-only`(스키마는 앱이 시작할 때 Flyway가 이미 만들었다. 데이터 덤프에 시퀀스 값도 들어 있어 새 노트 id가 겹치지 않는다). 로컬 `data/images/*` → `scp` → `docker compose cp`로 `app:/data/images/`. 확인: 서버 첫 화면의 노트 수가 로컬과 같고 이미지가 보인다.
 - [ ] **Step 9: 커밋과 노트**: `git commit -m "docs: 서버 준비 기록"`, `/blog`로 Lightsail·SSH·스왑 노트
 
 ---
