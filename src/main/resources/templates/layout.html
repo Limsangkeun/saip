@@ -15,7 +15,7 @@
 </head>
 <body>
 <header class="topbar">
-  <button class="menu" type="button" aria-label="주제 목록 열기" onclick="document.body.classList.toggle('side-open')">☰</button>
+  <button class="menu" type="button" aria-label="주제 목록 열기">☰</button>
   <a class="brand" th:href="@{/}">saip<span class="brand-dot">.</span><span class="brand-sub">learning notes</span></a>
   <form class="search" th:action="@{/search}" method="get" role="search">
     <input type="search" name="q" placeholder="노트 검색" aria-label="노트 검색" th:value="${q}">

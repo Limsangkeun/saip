@@ -104,6 +104,9 @@ function buildToc(root) {
   }
 }
 
+// ⑤ 좁은 화면 메뉴 버튼 (CSP가 인라인 onclick을 막으므로 여기서 연결)
+document.querySelector('.menu')?.addEventListener('click', () => document.body.classList.toggle('side-open'));
+
 const article = document.querySelector('article .markdown');
 if (article) {
   buildToc(article);

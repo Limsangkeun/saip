@@ -17,6 +17,16 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 class SecurityConfig {
 
+	/**
+	 * 스크립트는 우리 사이트와 두 CDN(highlight.js, Mermaid)만. 스타일 인라인은 Mermaid가 SVG에 &lt;style&gt;을 넣어서 허용한다. connect-src의 jsdelivr는
+	 * Mermaid ESM이 나머지 조각을 불러올 때 쓴다.
+	 */
+	static final String CSP = "default-src 'self'; "
+			+ "script-src 'self' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; "
+			+ "style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; img-src 'self' data:; "
+			+ "connect-src 'self' https://cdn.jsdelivr.net; font-src 'self' data:; object-src 'none'; base-uri 'self'; "
+			+ "form-action 'self'; frame-ancestors 'none'";
+
 	/** Claude Code용 API: Bearer 토큰 필수, 쿠키·세션을 쓰지 않으므로 CSRF는 끈다. */
 	@Bean
 	@Order(1)
@@ -45,6 +55,7 @@ class SecurityConfig {
 				.permitAll())
 			.oauth2Login(o -> o.userInfoEndpoint(u -> u.userAuthoritiesMapper(adminAuthorities)))
 			.logout(l -> l.logoutSuccessUrl("/"))
+			.headers(h -> h.contentSecurityPolicy(c -> c.policyDirectives(CSP)))
 			.build();
 	}
 

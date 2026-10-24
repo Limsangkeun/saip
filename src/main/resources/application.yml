@@ -1,4 +1,6 @@
 server:
+  # Caddy 뒤에서 X-Forwarded-Proto/Host로 원래 주소(https://도메인)를 안다. 앱 포트는 외부에 열지 않는다(Caddy가 헤더를 덮어씀).
+  forward-headers-strategy: framework
   servlet:
     session:
       # 기본 30분이면 편집기를 열어 둔 사이 세션과 CSRF 토큰이 사라져 저장이 403이 된다. 관리자 한 명뿐인 블로그라 길게.
