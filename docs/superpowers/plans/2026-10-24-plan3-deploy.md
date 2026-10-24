@@ -109,22 +109,22 @@
   - compose 서비스 `db`(볼륨 `pgdata`), `app`(볼륨 `images` → `/data/images`), `caddy`(볼륨 `caddy_data`, `caddy_config`, 포트 80·443)
   - `.env` 키: `DOMAIN`, `GITHUB_USER`, `APP_TAG`(기본 `latest`), `BACKUP_BUCKET`(Task 7), `POSTGRES_PASSWORD`, `BLOG_API_TOKEN`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `BLOG_ADMIN_EMAIL`
 
-- [ ] **Step 1: 개념 설명**: 이미지와 컨테이너, 레이어와 캐시, 멀티스테이지 빌드(빌드 도구는 최종 이미지에 넣지 않는다), 볼륨(컨테이너는 버려도 데이터는 남는다), compose 내부 네트워크와 서비스 이름으로 접속하기, Caddy가 인증서를 자동으로 받는 원리, ARM과 x86(Lightsail은 x86_64, 이 PC도 amd64라 따로 할 일이 없다)
-- [ ] **Step 2: `Dockerfile` 작성**
+- [x] **Step 1: 개념 설명**: 이미지와 컨테이너, 레이어와 캐시, 멀티스테이지 빌드(빌드 도구는 최종 이미지에 넣지 않는다), 볼륨(컨테이너는 버려도 데이터는 남는다), compose 내부 네트워크와 서비스 이름으로 접속하기, Caddy가 인증서를 자동으로 받는 원리, ARM과 x86(Lightsail은 x86_64, 이 PC도 amd64라 따로 할 일이 없다)
+- [x] **Step 2: `Dockerfile` 작성**
   - 1단계 `eclipse-temurin:21-jdk`(태그 고정)에서 `./gradlew bootJar -x test`(테스트는 CI가 따로 돌린다). Gradle 캐시가 잘 먹도록 `gradlew`, `gradle/`, `build.gradle`, `settings.gradle`를 먼저 복사하고 `./gradlew dependencies`, 그다음 `src/` 복사.
   - 2단계 `eclipse-temurin:21-jre`(태그 고정), root가 아닌 사용자로 실행, `ENTRYPOINT ["java", "-jar", "/app/app.jar"]`. 힙 옵션은 compose의 `JAVA_TOOL_OPTIONS`로 준다.
   - `.dockerignore`: `.git`, `build`, `.gradle`, `data`, `.superpowers`, `.playwright-mcp`, `deploy/.env`
-- [ ] **Step 3: `deploy/compose.yaml` 작성**
+- [x] **Step 3: `deploy/compose.yaml` 작성**
   - `db`: `postgres:17`(마이너 태그 고정), `POSTGRES_DB/USER=blog`, `POSTGRES_PASSWORD=${POSTGRES_PASSWORD}`, `command: postgres -c shared_buffers=64MB`, `healthcheck: pg_isready -U blog`, `mem_limit: 256m`, 포트 공개 없음
   - `app`: 위 이미지, `depends_on: db (service_healthy)`, 환경 `SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/blog`, `SPRING_DATASOURCE_USERNAME=blog`, `SPRING_DATASOURCE_PASSWORD`, `BLOG_IMAGE_DIR=/data/images`, `BLOG_BASE_URL=https://${DOMAIN}`, `JAVA_TOOL_OPTIONS=-Xmx320m -XX:+UseSerialGC`, `TZ=Asia/Seoul`, 그 밖의 `.env` 비밀값, `mem_limit: 512m`, `restart: unless-stopped`, 포트 공개 없음
   - `caddy`: `caddy:2`(마이너 태그 고정), `ports: 80:80, 443:443`, `./Caddyfile:/etc/caddy/Caddyfile:ro`, `DOMAIN` 전달, `mem_limit: 64m`
   - 모든 서비스 `logging: json-file, max-size 10m, max-file 3`(디스크가 로그로 차지 않게)
-- [ ] **Step 4: `deploy/Caddyfile` 작성**: `{$DOMAIN} { encode gzip; reverse_proxy app:8080 }`. `DOMAIN=localhost`면 Caddy가 자체 인증서를 쓰고, IP만 있을 때는 `DOMAIN=:80`으로 http만 연다(Task 4).
-- [ ] **Step 5: 이미지 빌드 확인**: `docker build -t ghcr.io/<user>/saip:latest .` → 성공, 이미지 크기가 300MB 안팎(JRE 기반). compose는 같은 이름의 로컬 이미지가 있으면 그것을 쓴다.
-- [ ] **Step 6: 로컬 리허설**: `deploy/.env`를 `.env.example`에서 만든다(`DOMAIN=localhost`, 임의 비밀번호와 토큰, Google 값은 비워 둠). `docker compose -f deploy/compose.yaml --env-file deploy/.env up -d` → `curl -k https://localhost/` 200, `curl -k -H "Authorization: Bearer $t" https://localhost/api/notes` 200(토큰은 변수로만 쓰고 출력하지 않는다. `blog.py`는 자체 인증서를 거절하므로 여기서는 curl)
-- [ ] **Step 7: 재생성해도 데이터가 남는지 확인**(Review Focus 3): API로 노트 1개와 이미지 1개를 올린 뒤 `docker compose ... up -d --force-recreate app db` → 노트와 `/images/...`가 그대로 200. `docker compose ... down`(볼륨 유지) 후 다시 `up` → 그대로. 확인 뒤 `down -v`로 리허설 데이터를 지운다.
-- [ ] **Step 8: 메모리 확인**: `docker stats --no-stream` → 세 컨테이너 합계가 800MB 아래
-- [ ] **Step 9: 커밋과 노트**: `git commit -m "feat: Docker 이미지와 운영용 compose"`, `/blog`로 Docker·compose·Caddy 노트
+- [x] **Step 4: `deploy/Caddyfile` 작성**: `{$DOMAIN} { encode gzip; reverse_proxy app:8080 }`. `DOMAIN=localhost`면 Caddy가 자체 인증서를 쓰고, IP만 있을 때는 `DOMAIN=:80`으로 http만 연다(Task 4).
+- [x] **Step 5: 이미지 빌드 확인**: `docker build -t ghcr.io/<user>/saip:latest .` → 성공, 이미지 크기가 300MB 안팎(JRE 기반). compose는 같은 이름의 로컬 이미지가 있으면 그것을 쓴다.
+- [x] **Step 6: 로컬 리허설**: `deploy/.env`를 `.env.example`에서 만든다(`DOMAIN=localhost`, 임의 비밀번호와 토큰, Google 값은 비워 둠). `docker compose -f deploy/compose.yaml --env-file deploy/.env up -d` → `curl -k https://localhost/` 200, `curl -k -H "Authorization: Bearer $t" https://localhost/api/notes` 200(토큰은 변수로만 쓰고 출력하지 않는다. `blog.py`는 자체 인증서를 거절하므로 여기서는 curl)
+- [x] **Step 7: 재생성해도 데이터가 남는지 확인**(Review Focus 3): API로 노트 1개와 이미지 1개를 올린 뒤 `docker compose ... up -d --force-recreate app db` → 노트와 `/images/...`가 그대로 200. `docker compose ... down`(볼륨 유지) 후 다시 `up` → 그대로. 확인 뒤 `down -v`로 리허설 데이터를 지운다.
+- [x] **Step 8: 메모리 확인**: `docker stats --no-stream` → 세 컨테이너 합계가 800MB 아래
+- [x] **Step 9: 커밋과 노트**: `git commit -m "feat: Docker 이미지와 운영용 compose"`, `/blog`로 Docker·compose·Caddy 노트
 
 ---
 
