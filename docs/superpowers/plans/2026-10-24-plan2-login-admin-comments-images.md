@@ -221,8 +221,8 @@
   - `SKILL.md`: 사용자가 대화에 이미지 파일을 첨부했고 노트에 도움이 되면 `image`로 올리고 `markdown`을 본문에 넣는다. **올리기 전에 이미지를 직접 보고** 키, 비밀번호, 사내 화면이 보이면 올리지 않고 사용자에게 알린다(이미지는 패턴 검사가 불가능).
   - `.gitignore`: `data/`, `__pycache__/`. 이미 커밋된 `claude-skill/blog/__pycache__`는 `git rm --cached`(계획 1 리뷰 이월).
 
-- [ ] **Step 1: 개념 설명**: multipart 업로드, 이미지 압축과 리사이즈가 비용(디스크, 트래픽)에 주는 영향, EXIF에 촬영 위치가 들어 있다는 것, 압축 폭탄(작은 파일이 거대한 그림으로 풀림)과 "크기를 먼저 읽기", 내용 해시 파일명과 영구 캐시, 나중에 Docker 볼륨으로 이 폴더를 보존한다는 예고(계획 3)
-- [ ] **Step 2: 실패 테스트 작성**
+- [x] **Step 1: 개념 설명**: multipart 업로드, 이미지 압축과 리사이즈가 비용(디스크, 트래픽)에 주는 영향, EXIF에 촬영 위치가 들어 있다는 것, 압축 폭탄(작은 파일이 거대한 그림으로 풀림)과 "크기를 먼저 읽기", 내용 해시 파일명과 영구 캐시, 나중에 Docker 볼륨으로 이 폴더를 보존한다는 예고(계획 3)
+- [x] **Step 2: 실패 테스트 작성**
 
 ```java
 // ImageStoreTest (@TempDir, 테스트 안에서 BufferedImage를 ImageIO.write로 만들어 씀)
@@ -242,11 +242,11 @@
 @Test void uploadedImageIsServed()              // 업로드한 path로 GET → 200, Cache-Control에 immutable
 ```
 `blog.py selftest`에 추가: `multipart(b"x", "a.png")`가 경계 문자열과 `filename="a.png"`를 포함하는지.
-- [ ] **Step 3: 실행해서 실패 확인**: `./gradlew test --tests '*ImageStoreTest' --tests '*ImageUploadTest'`, `python claude-skill/blog/blog.py selftest` → FAIL
-- [ ] **Step 4: 구현**: `application.yml`에 `spring.servlet.multipart.max-file-size: 10MB`, `max-request-size: 10MB`, `blog.image-dir: ${BLOG_IMAGE_DIR:data/images}`
-- [ ] **Step 5: 실행해서 통과 확인**: 위 명령 PASS, `./gradlew test` 전체 PASS
-- [ ] **Step 6: 수동 확인**: 편집기에 스크린샷 붙여넣기 → 미리보기에 이미지, `blog.py image`로 올린 이미지가 노트에 보이는지
-- [ ] **Step 7: 커밋**: `git commit -m "feat: 노트 이미지 업로드"`
+- [x] **Step 3: 실행해서 실패 확인**: `./gradlew test --tests '*ImageStoreTest' --tests '*ImageUploadTest'`, `python claude-skill/blog/blog.py selftest` → FAIL
+- [x] **Step 4: 구현**: `application.yml`에 `spring.servlet.multipart.max-file-size: 10MB`, `max-request-size: 10MB`, `blog.image-dir: ${BLOG_IMAGE_DIR:data/images}`
+- [x] **Step 5: 실행해서 통과 확인**: 위 명령 PASS, `./gradlew test` 전체 PASS
+- [x] **Step 6: 수동 확인**: 편집기에 스크린샷 붙여넣기 → 미리보기에 이미지, `blog.py image`로 올린 이미지가 노트에 보이는지
+- [x] **Step 7: 커밋**: `git commit -m "feat: 노트 이미지 업로드"`
 
 ---
 

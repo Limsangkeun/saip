@@ -22,6 +22,7 @@
                 placeholder="마크다운으로 쓰세요. 이미지는 붙여넣거나 끌어다 놓으면 올라갑니다."></textarea>
       <div id="preview" class="markdown preview" aria-label="미리보기"></div>
     </div>
+    <p id="upload-status" class="upload-status" role="status" aria-live="polite"></p>
     <div class="editor-actions">
       <button type="submit" class="btn">저장</button>
       <a th:if="${slug}" th:href="@{/notes/{s}(s=${slug})}">공개 화면 보기</a>

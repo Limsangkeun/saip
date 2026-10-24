@@ -97,6 +97,8 @@ button.link:hover { text-decoration: underline; }
   min-height: 70vh; resize: vertical; font-family: ui-monospace, Consolas, monospace; font-size: 14px; line-height: 1.6;
 }
 .preview { min-height: 70vh; max-height: 80vh; overflow: auto; padding: 0 16px; border: 1px solid var(--line); border-radius: 6px; }
+.upload-status { margin: 8px 0 0; color: #cf222e; font-size: 14px; }
+.upload-status:empty { display: none; }
 .editor-actions { display: flex; align-items: center; gap: 16px; margin-top: 12px; }
 @media (max-width: 768px) {
   .editor-fields, .editor-panes { grid-template-columns: 1fr; }

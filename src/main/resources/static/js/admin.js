@@ -4,6 +4,7 @@ import { enhance } from './site.js';
 const meta = (name) => document.querySelector(`meta[name="${name}"]`)?.content;
 const body = document.getElementById('body');
 const preview = document.getElementById('preview');
+const status = document.getElementById('upload-status');
 
 if (body && preview) {
   let timer;
@@ -42,7 +43,9 @@ if (body && preview) {
       body: form,
     });
     const result = await res.json().catch(() => ({ error: `업로드 실패 (${res.status})` }));
-    body.value = body.value.replace(marker, res.ok ? result.markdown : `<!-- ${result.error} -->`);
+    // 실패 사유는 본문이 아니라 상태 줄에 띄운다(본문에 넣으면 공개 화면에 글자로 남는다)
+    body.value = body.value.replace(marker + '\n', res.ok ? result.markdown + '\n' : '');
+    status.textContent = res.ok ? '' : `${file.name || '이미지'}: ${result.error}`;
     schedule();
   };
   const images = (list) => [...list].filter((f) => f.type.startsWith('image/'));
