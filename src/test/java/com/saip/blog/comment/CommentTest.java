@@ -78,8 +78,16 @@ class CommentTest {
 	}
 
 	@Test
+	void loginLinkReturnsToNoteComments() throws Exception {
+		mvc.perform(get("/notes/docker/comments/login")).andExpect(redirectedUrl("/oauth2/authorization/google"));
+		mvc.perform(get("/notes/docker/comments/login").with(as("u1", "유저")))
+			.andExpect(redirectedUrl("/notes/docker#comments"));
+	}
+
+	@Test
 	void anonymousSeesLoginLinkNotForm() throws Exception {
 		mvc.perform(get("/notes/docker"))
+			.andExpect(content().string(containsString("href=\"/notes/docker/comments/login\"")))
 			.andExpect(content().string(containsString("로그인하고 댓글 달기")))
 			.andExpect(content().string(not(containsString("name=\"body\""))));
 	}

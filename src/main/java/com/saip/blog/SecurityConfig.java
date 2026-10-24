@@ -39,6 +39,8 @@ class SecurityConfig {
 				.hasRole("ADMIN")
 				.requestMatchers(HttpMethod.POST, "/notes/*/comments/**")
 				.authenticated()
+				.requestMatchers("/notes/*/comments/login")
+				.authenticated()
 				.anyRequest()
 				.permitAll())
 			.oauth2Login(o -> o.userInfoEndpoint(u -> u.userAuthoritiesMapper(adminAuthorities)))

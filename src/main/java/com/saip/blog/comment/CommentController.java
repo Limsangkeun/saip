@@ -8,6 +8,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +26,15 @@ public class CommentController {
 
 	CommentController(CommentService comments) {
 		this.comments = comments;
+	}
+
+	/**
+	 * "로그인하고 댓글 달기" 링크. 로그인이 필요한 주소라서 Spring Security가 이 요청을 기억해 두고 Google 로그인 뒤 다시 보내 준다. 돌아올 곳은 서버가 정하므로
+	 * 외부 사이트로 보내는 오픈 리다이렉트가 생기지 않는다.
+	 */
+	@GetMapping("/login")
+	String loginThenBack(@PathVariable String slug) {
+		return redirect(slug, "comments");
 	}
 
 	@PostMapping

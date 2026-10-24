@@ -40,7 +40,7 @@
       <textarea name="body" maxlength="2000" required placeholder="댓글을 남겨 주세요 (최대 2000자)" aria-label="댓글"></textarea>
       <button type="submit" class="btn">댓글 달기</button>
     </form>
-    <p th:if="${viewerSub == null}"><a th:href="@{/oauth2/authorization/google}">로그인하고 댓글 달기</a></p>
+    <p th:if="${viewerSub == null}"><a th:href="@{/notes/{s}/comments/login(s=${note.slug})}">로그인하고 댓글 달기</a></p>
     <script th:if="${viewerSub != null}" type="module" th:src="@{/js/admin.js}"></script>
   </section>
 </main>
