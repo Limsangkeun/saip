@@ -1,5 +1,6 @@
 package com.saip.blog.admin;
 
+import com.saip.blog.comment.CommentService;
 import com.saip.blog.markdown.MarkdownRenderer;
 import com.saip.blog.note.Category;
 import com.saip.blog.note.DuplicateSlugException;
@@ -35,9 +36,12 @@ class AdminController {
 
 	private final MarkdownRenderer markdown;
 
-	AdminController(NoteService notes, MarkdownRenderer markdown) {
+	private final CommentService comments;
+
+	AdminController(NoteService notes, MarkdownRenderer markdown, CommentService comments) {
 		this.notes = notes;
 		this.markdown = markdown;
+		this.comments = comments;
 	}
 
 	record NoteForm(String title, String categorySlug, String categoryName, String body) {
@@ -121,6 +125,18 @@ class AdminController {
 		String slug = notes.revision(id).getNote().getSlug();
 		notes.deleteRevision(id);
 		return "redirect:/admin/notes/" + UriUtils.encodePathSegment(slug, StandardCharsets.UTF_8) + "/revisions";
+	}
+
+	@GetMapping("/comments")
+	String comments(Model model) {
+		model.addAttribute("comments", comments.recent(100));
+		return "admin/comments";
+	}
+
+	@PostMapping("/comments/{id}/delete")
+	String deleteComment(@PathVariable long id) {
+		comments.delete(id, null, true);
+		return "redirect:/admin/comments";
 	}
 
 	/** 편집기 미리보기. 공개 화면과 같은 렌더러를 써서 결과가 같다. */

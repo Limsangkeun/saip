@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::main}, ~{})}">
+<head><title>댓글 관리 · saip</title></head>
+<body>
+<main class="main">
+  <h1>댓글 관리</h1>
+  <p class="meta">최근 100개. <a th:href="@{/admin}">노트 관리로</a></p>
+  <table class="admin-table">
+    <thead><tr><th>노트</th><th>작성자</th><th>내용</th><th>날짜</th><th></th></tr></thead>
+    <tbody>
+      <tr th:each="c : ${comments}">
+        <td><a th:href="@{/notes/{s}(s=${c.note.slug})} + '#comment-' + ${c.id}" th:text="${c.note.title}">Docker</a></td>
+        <td th:text="${c.authorName}">유저</td>
+        <td class="comment-body" th:text="${c.body}">내용</td>
+        <td th:text="${@dates.day(c.createdAt)}">2026-10-24</td>
+        <td>
+          <form method="post" th:action="@{/admin/comments/{id}/delete(id=${c.id})}" data-confirm="이 댓글을 삭제할까요?">
+            <button type="submit" class="link">삭제</button>
+          </form>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <p class="empty" th:if="${#lists.isEmpty(comments)}">아직 댓글이 없습니다.</p>
+  <script type="module" th:src="@{/js/admin.js}"></script>
+</main>
+</body>
+</html>

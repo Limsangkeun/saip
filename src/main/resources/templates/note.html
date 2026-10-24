@@ -8,6 +8,41 @@
     <p class="meta" th:text="${note.category.name + ' · 마지막 수정 ' + @dates.day(note.updatedAt)}">배포 · 마지막 수정 2026-10-24</p>
     <div class="markdown" th:utext="${html}">본문</div>
   </article>
+
+  <section id="comments" class="comments">
+    <h2 th:text="${'댓글 ' + #lists.size(comments)}">댓글 0</h2>
+    <p class="form-error" role="alert" th:if="${commentError}" th:text="${commentError}">오류</p>
+
+    <!-- 댓글은 평문: th:text로만 출력한다(저장형 XSS 방지) -->
+    <div class="comment" th:each="c : ${comments}" th:id="${'comment-' + c.id}">
+      <div class="comment-head">
+        <strong th:text="${c.authorName}">이름</strong>
+        <span class="meta" th:text="${@dates.day(c.createdAt)}">2026-10-24</span>
+      </div>
+      <p class="comment-body" th:text="${c.body}">본문</p>
+      <div class="comment-actions">
+        <details th:if="${viewerSub != null and viewerSub == c.authorSub}">
+          <summary>수정</summary>
+          <form method="post" th:action="@{/notes/{s}/comments/{id}(s=${note.slug},id=${c.id})}">
+            <textarea name="body" maxlength="2000" required th:text="${c.body}"></textarea>
+            <button type="submit" class="btn">저장</button>
+          </form>
+        </details>
+        <form th:if="${viewerIsAdmin or (viewerSub != null and viewerSub == c.authorSub)}" method="post"
+              th:action="@{/notes/{s}/comments/{id}/delete(s=${note.slug},id=${c.id})}" data-confirm="이 댓글을 삭제할까요?">
+          <button type="submit" class="link">삭제</button>
+        </form>
+      </div>
+    </div>
+
+    <form th:if="${viewerSub != null}" class="comment-form" method="post"
+          th:action="@{/notes/{s}/comments(s=${note.slug})}">
+      <textarea name="body" maxlength="2000" required placeholder="댓글을 남겨 주세요 (최대 2000자)" aria-label="댓글"></textarea>
+      <button type="submit" class="btn">댓글 달기</button>
+    </form>
+    <p th:if="${viewerSub == null}"><a th:href="@{/oauth2/authorization/google}">로그인하고 댓글 달기</a></p>
+    <script th:if="${viewerSub != null}" type="module" th:src="@{/js/admin.js}"></script>
+  </section>
 </main>
 <aside class="toc" aria-label="목차"><nav id="toc"></nav></aside>
 </body>
