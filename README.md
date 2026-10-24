@@ -35,6 +35,25 @@ ssh -i ~/.ssh/saip-lightsail.pem ubuntu@<고정 IP>
 cd ~/saip; docker compose ps; docker compose logs --since 1h app; docker compose up -d
 ```
 
+### 자동 배포 (`.github/workflows/deploy.yml`)
+
+`main`에 push하면 `test`(gradle test, blog.py selftest) → `image`(ghcr에 `:<커밋 SHA>`, `:latest`) → `deploy`(서버 `.env`의 `APP_TAG`를 SHA로 바꾸고 `compose pull`·`up -d`, `https://saip.nexus` 확인). 앞 잡이 실패하면 배포하지 않는다. 다른 브랜치에서 수동 실행(`workflow_dispatch`)하면 테스트만 한다.
+
+| Secret | 값 |
+|---|---|
+| `SSH_HOST` | `saip.nexus` |
+| `SSH_USER` | `ubuntu` |
+| `SSH_KEY` | 배포 전용 개인키 `~/.ssh/saip-deploy` (공개키는 서버 `~/.ssh/authorized_keys`. 유출되면 그 줄만 지운다) |
+| `SSH_KNOWN_HOSTS` | `ssh-keyscan -t ed25519,ecdsa,rsa saip.nexus` 결과 (서버를 다시 만들면 갱신) |
+
+되돌리기(서버에서): 이전 SHA는 GitHub Actions 실행 목록이나 `git log`에서 찾는다.
+
+```bash
+cd ~/saip && sed -i 's/^APP_TAG=.*/APP_TAG=<이전 SHA>/' .env && docker compose up -d app
+```
+
+다음 push가 다시 최신 SHA로 바꾼다.
+
 로컬 리허설(운영과 같은 구성을 `https://localhost`로, 자체 인증서라 `curl -k`):
 
 ```powershell
