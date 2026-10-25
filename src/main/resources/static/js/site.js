@@ -112,8 +112,14 @@ document.querySelector('.menu')?.addEventListener('click', () => {
   try { localStorage.setItem('side', closed ? 'closed' : 'open'); } catch {}
 });
 
+// ⑥ 노트가 많아도 지금 보는 노트가 사이드바 가운데 보이게(사이드바만 스크롤, 페이지는 그대로)
+const side = document.querySelector('.side');
+const current = side?.querySelector('a.on');
+if (current) side.scrollTop = current.offsetTop - side.clientHeight / 2;
+
 const article = document.querySelector('article .markdown');
 if (article) {
   buildToc(article);
   await enhance(article);
 }
+

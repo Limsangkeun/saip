@@ -3,6 +3,7 @@ package com.saip.blog.admin;
 import static com.saip.blog.admin.AdminAccessTest.admin;
 import static com.saip.blog.admin.AdminAccessTest.user;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -92,6 +93,24 @@ class AdminNoteTest {
 		mvc.perform(post("/admin/notes/docker/delete").with(admin()).with(csrf())).andExpect(redirectedUrl("/admin"));
 
 		assertThrows(NoteNotFoundException.class, () -> notes.get("docker"));
+	}
+
+	@Test
+	void indexHasDeleteButton() throws Exception {
+		notes.create("Docker", "deploy", "배포", "v1");
+
+		mvc.perform(get("/admin").with(admin()))
+			.andExpect(content().string(containsString("action=\"/admin/notes/docker/delete\"")));
+	}
+
+	@Test
+	void indexSearchFiltersNotes() throws Exception {
+		notes.create("Docker", "deploy", "배포", "컨테이너 이야기");
+		notes.create("Caddy", "deploy", "배포", "HTTPS 이야기");
+
+		mvc.perform(get("/admin").param("q", "컨테이너").with(admin()))
+			.andExpect(content().string(containsString("/admin/notes/docker/edit")))
+			.andExpect(content().string(not(containsString("/admin/notes/caddy/edit"))));
 	}
 
 	@Test

@@ -5,18 +5,28 @@
 <main class="main">
   <h1>노트 관리</h1>
   <p><a class="btn" th:href="@{/admin/notes/new}">새 노트</a> <a class="btn" th:href="@{/admin/comments}">댓글 관리</a></p>
+  <form class="admin-search" th:action="@{/admin}" method="get" role="search">
+    <input type="search" name="q" placeholder="제목·본문 검색" aria-label="노트 관리 검색" th:value="${param.q}">
+  </form>
   <table class="admin-table">
     <thead><tr><th>제목</th><th>주제</th><th>수정일</th><th></th></tr></thead>
-    <tbody th:each="cat : ${tree}">
-      <tr th:each="n : ${cat.notes}">
+    <tbody>
+      <tr th:each="n : ${rows}">
         <td><a th:href="@{/notes/{slug}(slug=${n.slug})}" th:text="${n.title}">Docker</a></td>
-        <td th:text="${cat.name}">배포</td>
+        <td th:text="${n.category.name}">배포</td>
         <td th:text="${@dates.day(n.updatedAt)}">2026-10-24</td>
-        <td><a th:href="@{/admin/notes/{slug}/edit(slug=${n.slug})}">편집</a></td>
+        <td class="row-actions">
+          <a th:href="@{/admin/notes/{slug}/edit(slug=${n.slug})}">편집</a>
+          <form method="post" th:action="@{/admin/notes/{slug}/delete(slug=${n.slug})}"
+                th:data-confirm="|'${n.title}' 노트를 삭제할까요? 버전 기록과 댓글도 함께 지워집니다.|">
+            <button type="submit" class="link danger">삭제</button>
+          </form>
+        </td>
       </tr>
     </tbody>
   </table>
-  <p class="empty" th:if="${#lists.isEmpty(tree)}">아직 노트가 없습니다.</p>
+  <p class="empty" th:if="${#lists.isEmpty(rows)}" th:text="${param.q} ? '검색 결과가 없습니다.' : '아직 노트가 없습니다.'">아직 노트가 없습니다.</p>
+  <script type="module" th:src="@{/js/admin.js}"></script>
 </main>
 </body>
 </html>

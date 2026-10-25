@@ -42,11 +42,11 @@
 </header>
 <div class="page">
   <nav class="side" aria-label="주제">
-    <section th:each="cat : ${tree}">
-      <h2 class="cat" th:text="${cat.name}">배포</h2>
+    <details th:each="cat : ${tree}" open>
+      <summary class="cat" th:text="${cat.name}">배포</summary>
       <a th:each="n : ${cat.notes}" th:href="@{/notes/{slug}(slug=${n.slug})}" th:text="${n.title}"
          th:classappend="${note != null and note.slug == n.slug} ? 'on'">Docker</a>
-    </section>
+    </details>
     <p class="empty" th:if="${tree != null and #lists.isEmpty(tree)}">아직 노트가 없습니다.</p>
   </nav>
   <main class="main" th:replace="${content}">본문</main>

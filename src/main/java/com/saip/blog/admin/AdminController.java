@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.util.UriUtils;
@@ -52,8 +53,11 @@ class AdminController {
 		return notes.tree();
 	}
 
+	/** 검색어가 있으면 공개 검색과 같은 결과(제목·본문)만, 없으면 전체를 주제 순으로 보여 준다. */
 	@GetMapping
-	String index() {
+	String index(@RequestParam(defaultValue = "") String q, Model model) {
+		model.addAttribute("rows", q.isBlank() ? notes.tree().stream().flatMap(c -> c.getNotes().stream()).toList()
+				: notes.search(q));
 		return "admin/index";
 	}
 
