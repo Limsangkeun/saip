@@ -1,0 +1,8 @@
+User-agent: *
+Disallow: /admin
+Disallow: /api/
+Disallow: /oauth2/
+Disallow: /login
+Disallow: /search
+
+Sitemap: https://saip.nexus/sitemap.xml

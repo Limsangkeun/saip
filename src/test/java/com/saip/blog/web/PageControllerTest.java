@@ -76,6 +76,36 @@ class PageControllerTest {
 	}
 
 	@Test
+	void notePageHasDescriptionAndCanonical() throws Exception {
+		notes.create("멀티스테이지 빌드", "deploy", "배포", "# 제목\n\n**빌드**와 실행 단계를 나눈다.");
+
+		mvc.perform(get("/notes/{slug}", "멀티스테이지-빌드"))
+			.andExpect(content().string(containsString("<meta name=\"description\" content=\"제목 빌드와 실행 단계를 나눈다.\">")))
+			.andExpect(content().string(containsString("<meta property=\"og:title\" content=\"멀티스테이지 빌드\">")))
+			.andExpect(content().string(containsString(
+					"<link rel=\"canonical\" href=\"http://localhost/notes/%EB%A9%80%ED%8B%B0%EC%8A%A4%ED%85%8C%EC%9D%B4%EC%A7%80-%EB%B9%8C%EB%93%9C\">")));
+	}
+
+	@Test
+	void sitemapListsNotes() throws Exception {
+		notes.create("멀티스테이지 빌드", "deploy", "배포", "본문");
+
+		mvc.perform(get("/sitemap.xml"))
+			.andExpect(status().isOk())
+			.andExpect(content().contentTypeCompatibleWith("application/xml"))
+			.andExpect(content().string(containsString(
+					"<loc>http://localhost/notes/%EB%A9%80%ED%8B%B0%EC%8A%A4%ED%85%8C%EC%9D%B4%EC%A7%80-%EB%B9%8C%EB%93%9C</loc>")))
+			.andExpect(content().string(containsString("<lastmod>")));
+	}
+
+	@Test
+	void robotsPointsToSitemap() throws Exception {
+		mvc.perform(get("/robots.txt"))
+			.andExpect(status().isOk())
+			.andExpect(content().string(containsString("Sitemap: https://saip.nexus/sitemap.xml")));
+	}
+
+	@Test
 	void searchFinds() throws Exception {
 		notes.create("Docker Compose", "deploy", "배포", "compose 사용법");
 

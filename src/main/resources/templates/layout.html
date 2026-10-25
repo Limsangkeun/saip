@@ -7,6 +7,15 @@
   <meta name="_csrf" th:if="${_csrf}" th:content="${_csrf.token}">
   <meta name="_csrf_header" th:if="${_csrf}" th:content="${_csrf.headerName}">
   <title th:replace="${title}">saip</title>
+  <th:block th:if="${note != null and description != null}">
+    <meta name="description" th:content="${description}">
+    <link rel="canonical" th:href="${canonical}">
+    <meta property="og:type" content="article">
+    <meta property="og:site_name" content="saip">
+    <meta property="og:title" th:content="${note.title}">
+    <meta property="og:description" th:content="${description}">
+    <meta property="og:url" th:content="${canonical}">
+  </th:block>
   <link rel="icon" th:href="@{/favicon.svg}" type="image/svg+xml">
   <link rel="stylesheet" th:href="@{/css/site.css}">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github.min.css" media="(prefers-color-scheme: light)"
