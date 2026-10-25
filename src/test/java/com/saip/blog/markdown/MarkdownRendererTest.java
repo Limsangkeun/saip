@@ -39,6 +39,24 @@ class MarkdownRendererTest {
 	}
 
 	@Test
+	void boldBeforeKoreanParticle() {
+		assertThat(renderer.render("**머신러닝(기계 학습)**이다. **\"서울\"**은"))
+			.contains("<strong>머신러닝(기계 학습)</strong>이다.")
+			.contains("<strong>&quot;서울&quot;</strong>은")
+			.doesNotContain("**");
+	}
+
+	@Test
+	void boldFixLeavesCodeAlone() {
+		assertThat(renderer.render("`**a(b)**c`\n\n```\n**a(b)**c\n```")).doesNotContain("<strong>");
+	}
+
+	@Test
+	void boldFixInSummary() {
+		assertThat(renderer.summary("**어텐션(Attention)**으로", 100)).isEqualTo("어텐션(Attention)으로");
+	}
+
+	@Test
 	void blocksJavascriptLinks() {
 		assertThat(renderer.render("[x](javascript:alert(1))")).doesNotContain("javascript:");
 	}
